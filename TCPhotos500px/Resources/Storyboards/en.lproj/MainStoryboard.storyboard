@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="2.0" toolsVersion="3084" systemVersion="12E55" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" initialViewController="MuX-O4-3bt">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="2083"/>
+    </dependencies>
+    <scenes>
+        <!--Category List View Controller-->
+        <scene sceneID="8ie-Ip-u0W">
+            <objects>
+                <tableViewController storyboardIdentifier="TCSideMenuViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="twe-ey-dQ4" customClass="TCCategoryListViewController" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" directionalLockEnabled="YES" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="none" showsSelectionImmediatelyOnTouchBegin="NO" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="Di6-f8-UB3">
+                        <rect key="frame" x="0.0" y="0.0" width="220" height="550"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="CategoryCell" textLabel="tYJ-d9-eQD" style="IBUITableViewCellStyleDefault" id="Z68-me-8eo" customClass="TCCategoryCell">
+                                <rect key="frame" x="0.0" y="22" width="220" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                    <rect key="frame" x="0.0" y="0.0" width="220" height="43"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tYJ-d9-eQD">
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <color key="highlightedColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        </label>
+                                    </subviews>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                </view>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="twe-ey-dQ4" id="8Bt-8D-ICF"/>
+                            <outlet property="delegate" destination="twe-ey-dQ4" id="sbG-T0-UpS"/>
+                        </connections>
+                    </tableView>
+                    <nil key="simulatedStatusBarMetrics"/>
+                    <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="rx6-06-Rgy" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-293" y="1828"/>
+        </scene>
+        <!--Thumbnails View Controller-->
+        <scene sceneID="grM-Lb-8sx">
+            <objects>
+                <viewController storyboardIdentifier="TCThumbnailsViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="MuX-O4-3bt" customClass="TCThumbnailsViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="8bu-FL-V2Q">
+                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="J6E-wk-Cq2">
+                                <color key="tintColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                <items>
+                                    <navigationItem id="IiT-E1-eIZ">
+                                        <barButtonItem key="leftBarButtonItem" id="aSa-x9-hDd">
+                                            <segmentedControl key="customView" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="bAB-eK-6nf">
+                                                <rect key="frame" x="7" y="7" width="420" height="31"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <segments>
+                                                    <segment title="Popular"/>
+                                                    <segment title="Editor's Choice"/>
+                                                    <segment title="Upcoming"/>
+                                                    <segment title="Fresh"/>
+                                                </segments>
+                                                <color key="tintColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="calibratedRGB"/>
+                                                <connections>
+                                                    <action selector="featureChanged:" destination="MuX-O4-3bt" eventType="valueChanged" id="bT0-Zi-apb"/>
+                                                </connections>
+                                            </segmentedControl>
+                                        </barButtonItem>
+                                        <barButtonItem key="rightBarButtonItem" title="All Categories" id="jkZ-TF-1PX">
+                                            <color key="tintColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="calibratedRGB"/>
+                                            <connections>
+                                                <segue destination="twe-ey-dQ4" kind="popover" identifier="showCategoryList" popoverAnchorBarButtonItem="jkZ-TF-1PX" id="P0a-oL-6ii">
+                                                    <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
+                                                </segue>
+                                            </connections>
+                                        </barButtonItem>
+                                    </navigationItem>
+                                </items>
+                            </navigationBar>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" indicatorStyle="white" minimumZoomScale="0.0" maximumZoomScale="0.0" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="iyW-xG-xMZ">
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="5" minimumInteritemSpacing="5" id="Fpo-kM-bJj">
+                                    <size key="itemSize" width="249" height="249"/>
+                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="5" minY="5" maxX="5" maxY="5"/>
+                                </collectionViewFlowLayout>
+                                <cells>
+                                    <collectionViewCell clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="PhotoCell" id="j3j-e9-rkf" customClass="TCPhotoCell">
+                                        <rect key="frame" x="5" y="5" width="249" height="249"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                            <rect key="frame" x="0.0" y="0.0" width="249" height="249"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" translatesAutoresizingMaskIntoConstraints="NO" id="awj-r4-OrM">
+                                                    <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                                </imageView>
+                                                <activityIndicatorView clipsSubviews="YES" contentMode="scaleToFill" hidesWhenStopped="YES" animating="YES" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="AAZ-qO-8Lh">
+                                                    <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                                </activityIndicatorView>
+                                            </subviews>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </view>
+                                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                        <constraints>
+                                            <constraint firstItem="AAZ-qO-8Lh" firstAttribute="centerY" secondItem="awj-r4-OrM" secondAttribute="centerY" type="default" id="2Fb-h6-sfh"/>
+                                            <constraint firstItem="AAZ-qO-8Lh" firstAttribute="centerX" secondItem="awj-r4-OrM" secondAttribute="centerX" type="default" id="7nH-UJ-4pF"/>
+                                            <constraint firstItem="awj-r4-OrM" firstAttribute="bottom" secondItem="j3j-e9-rkf" secondAttribute="bottom" type="default" id="NCx-Ee-Gdf"/>
+                                            <constraint firstItem="awj-r4-OrM" firstAttribute="trailing" secondItem="j3j-e9-rkf" secondAttribute="trailing" type="default" id="hjC-JJ-Gt0"/>
+                                            <constraint firstItem="awj-r4-OrM" firstAttribute="top" secondItem="j3j-e9-rkf" secondAttribute="top" type="default" id="j1j-PX-gJH"/>
+                                            <constraint firstItem="awj-r4-OrM" firstAttribute="leading" secondItem="j3j-e9-rkf" secondAttribute="leading" type="default" id="shW-hf-8eL"/>
+                                        </constraints>
+                                        <connections>
+                                            <outlet property="activityIndicator" destination="AAZ-qO-8Lh" id="Wq5-yF-kq6"/>
+                                            <outlet property="imageView" destination="awj-r4-OrM" id="Cbc-fj-BhZ"/>
+                                        </connections>
+                                    </collectionViewCell>
+                                </cells>
+                                <connections>
+                                    <outlet property="dataSource" destination="MuX-O4-3bt" id="Ex7-m7-aAW"/>
+                                    <outlet property="delegate" destination="MuX-O4-3bt" id="15i-UT-49d"/>
+                                </connections>
+                            </collectionView>
+                        </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="iyW-xG-xMZ" firstAttribute="top" secondItem="J6E-wk-Cq2" secondAttribute="bottom" type="default" id="80p-kE-nt2"/>
+                            <constraint firstItem="iyW-xG-xMZ" firstAttribute="leading" secondItem="8bu-FL-V2Q" secondAttribute="leading" type="default" id="Kud-Ra-LA7"/>
+                            <constraint firstItem="J6E-wk-Cq2" firstAttribute="top" secondItem="8bu-FL-V2Q" secondAttribute="top" type="default" id="QfK-Ej-nVh"/>
+                            <constraint firstItem="iyW-xG-xMZ" firstAttribute="trailing" secondItem="8bu-FL-V2Q" secondAttribute="trailing" type="default" id="Sou-vQ-7m4"/>
+                            <constraint firstItem="J6E-wk-Cq2" firstAttribute="trailing" secondItem="8bu-FL-V2Q" secondAttribute="trailing" type="default" id="dqQ-rP-7In"/>
+                            <constraint firstItem="iyW-xG-xMZ" firstAttribute="bottom" secondItem="8bu-FL-V2Q" secondAttribute="bottom" type="default" id="vAy-gU-uyP"/>
+                            <constraint firstItem="J6E-wk-Cq2" firstAttribute="leading" secondItem="8bu-FL-V2Q" secondAttribute="leading" type="default" id="ytv-Vv-Arv"/>
+                        </constraints>
+                    </view>
+                    <toolbarItems/>
+                    <nil key="simulatedStatusBarMetrics"/>
+                    <nil key="simulatedTopBarMetrics"/>
+                    <nil key="simulatedBottomBarMetrics"/>
+                    <connections>
+                        <outlet property="categoryBarButtonItem" destination="jkZ-TF-1PX" id="dAT-Ao-WmQ"/>
+                        <outlet property="collectionView" destination="iyW-xG-xMZ" id="Y2C-hS-LA4"/>
+                        <outlet property="featureSegmentedControl" destination="bAB-eK-6nf" id="zJu-qs-vQV"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="PXb-QS-nMQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1331" y="1828"/>
+        </scene>
+    </scenes>
+    <classes>
+        <class className="NSLayoutConstraint" superclassName="NSObject">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/NSLayoutConstraint.h"/>
+        </class>
+        <class className="TCCategoryCell" superclassName="UITableViewCell">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/TCCategoryCell.h"/>
+        </class>
+        <class className="TCCategoryListViewController" superclassName="UITableViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/TCCategoryListViewController.h"/>
+        </class>
+        <class className="TCPhotoCell" superclassName="UICollectionViewCell">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/TCPhotoCell.h"/>
+            <relationships>
+                <relationship kind="outlet" name="activityIndicator" candidateClass="UIActivityIndicatorView"/>
+                <relationship kind="outlet" name="imageView" candidateClass="UIImageView"/>
+            </relationships>
+        </class>
+        <class className="TCThumbnailsViewController" superclassName="UIViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/TCThumbnailsViewController.h"/>
+            <relationships>
+                <relationship kind="action" name="featureChanged:"/>
+                <relationship kind="outlet" name="categoryBarButtonItem" candidateClass="UIBarButtonItem"/>
+                <relationship kind="outlet" name="collectionView" candidateClass="UICollectionView"/>
+                <relationship kind="outlet" name="featureSegmentedControl" candidateClass="UISegmentedControl"/>
+            </relationships>
+        </class>
+        <class className="UICollectionReusableView" superclassName="UIView">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/UICollectionReusableView.h"/>
+        </class>
+        <class className="UICollectionViewCell" superclassName="UICollectionReusableView">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/UICollectionViewCell.h"/>
+        </class>
+        <class className="UICollectionViewFlowLayout" superclassName="UICollectionViewLayout">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/UICollectionViewFlowLayout.h"/>
+        </class>
+    </classes>
+    <simulatedMetricsContainer key="defaultSimulatedMetrics">
+        <simulatedStatusBarMetrics key="statusBar" statusBarStyle="blackTranslucent"/>
+        <simulatedOrientationMetrics key="orientation"/>
+        <simulatedScreenMetrics key="destination"/>
+    </simulatedMetricsContainer>
+</document>

@@ -1,0 +1,28 @@
+//
+// Prefix header for all source files of the 'TCPhotos500px' target in the 'TCPhotos500px' project
+//
+
+#import <Availability.h>
+
+#ifndef __IPHONE_5_0
+#warning "This project uses features only available in iOS SDK 5.0 and later."
+#endif
+
+#ifdef __OBJC__
+    #import <UIKit/UIKit.h>
+    #import <Foundation/Foundation.h>
+
+    // https://github.com/AFNetworking/AFNetworking
+//    #import <SystemConfiguration/SystemConfiguration.h>
+//    #import <MobileCoreServices/MobileCoreServices.h>
+//    #import "AFNetworking.h"
+
+    // https://github.com/500px/500px-iOS-api
+    #import "PXAPI.h"
+
+    // https://github.com/samvermette/SVPullToRefresh
+    #import "UIScrollView+SVPullToRefresh.h"
+
+    // Utility methods for debugging purposes only.
+    #import "DescriptionBuilder.h"
+#endif

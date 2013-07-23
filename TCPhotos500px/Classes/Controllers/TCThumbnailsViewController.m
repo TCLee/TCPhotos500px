@@ -18,7 +18,7 @@ static NSString * const kShowPhotoSegueIdentifier = @"showPhoto";
 
 @interface TCThumbnailsViewController ()
 
-@property (nonatomic, weak) IBOutlet UICollectionView *collectionView;
+//@property (nonatomic, weak) IBOutlet UICollectionView *collectionView;
 @property (nonatomic, weak) IBOutlet UISegmentedControl *featureSegmentedControl;
 @property (nonatomic, weak) IBOutlet UIBarButtonItem *categoryBarButtonItem;
 
@@ -59,8 +59,8 @@ static NSString * const kShowPhotoSegueIdentifier = @"showPhoto";
     [self.collectionView addPullToRefreshWithActionHandler:^{
         __strong typeof(self) strongSelf = weakSelf;
         
-        [strongSelf reloadPhotoStreamForFeature:self.photoStream.feature
-                                 category:self.photoStream.category];
+        [strongSelf reloadPhotoStreamForFeature:strongSelf.photoStream.feature
+                                 category:strongSelf.photoStream.category];
         
         [strongSelf.collectionView.pullToRefreshView stopAnimating];
     }];

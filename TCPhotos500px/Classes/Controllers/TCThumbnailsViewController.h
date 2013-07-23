@@ -15,8 +15,7 @@
  Thumbnails are loaded asynchronously and are lazily loaded for the fastest 
  performance.
  */
-@interface TCThumbnailsViewController : UIViewController
-    <UICollectionViewDataSource, UICollectionViewDelegate,
-    TCCategoryListViewControllerDelegate>
+@interface TCThumbnailsViewController : UICollectionViewController
+    <TCCategoryListViewControllerDelegate>
 
 @end

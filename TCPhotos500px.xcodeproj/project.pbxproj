@@ -26,6 +26,7 @@
 		81DFAF63179D18180006371A /* TCPhotoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 81DFAF58179D18180006371A /* TCPhotoCell.m */; };
 		81DFAF68179D1CA60006371A /* DescriptionBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 81DFAF67179D1CA60006371A /* DescriptionBuilder.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		81DFAF72179D1E7E0006371A /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81DFAF70179D1E7E0006371A /* MainStoryboard.storyboard */; };
+		81DFAF75179D452C0006371A /* TCPhotoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 81DFAF74179D452C0006371A /* TCPhotoViewController.m */; };
 		D716B54DF63E45988A0C8480 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A0CCE50FF24F4FCF9D9B234C /* libPods.a */; };
 /* End PBXBuildFile section */
 
@@ -64,6 +65,8 @@
 		81DFAF66179D1CA60006371A /* DescriptionBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DescriptionBuilder.h; sourceTree = "<group>"; };
 		81DFAF67179D1CA60006371A /* DescriptionBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DescriptionBuilder.m; sourceTree = "<group>"; };
 		81DFAF71179D1E7E0006371A /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard.storyboard; sourceTree = "<group>"; };
+		81DFAF73179D452C0006371A /* TCPhotoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCPhotoViewController.h; sourceTree = "<group>"; };
+		81DFAF74179D452C0006371A /* TCPhotoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCPhotoViewController.m; sourceTree = "<group>"; };
 		A0CCE50FF24F4FCF9D9B234C /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -164,6 +167,8 @@
 				81DFAF43179D18180006371A /* TCCategoryListViewController.m */,
 				81DFAF44179D18180006371A /* TCThumbnailsViewController.h */,
 				81DFAF45179D18180006371A /* TCThumbnailsViewController.m */,
+				81DFAF73179D452C0006371A /* TCPhotoViewController.h */,
+				81DFAF74179D452C0006371A /* TCPhotoViewController.m */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -348,6 +353,7 @@
 				81DFAF62179D18180006371A /* TCCategoryCell.m in Sources */,
 				81DFAF63179D18180006371A /* TCPhotoCell.m in Sources */,
 				81DFAF68179D1CA60006371A /* DescriptionBuilder.m in Sources */,
+				81DFAF75179D452C0006371A /* TCPhotoViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

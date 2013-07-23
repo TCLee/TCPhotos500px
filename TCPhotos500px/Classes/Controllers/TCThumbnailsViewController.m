@@ -7,12 +7,14 @@
 //
 
 #import "TCThumbnailsViewController.h"
+#import "TCPhotoViewController.h"
 #import "TCPhotoCell.h"
 #import "TCPhotoStream.h"
 #import "TCPhotoStreamCategory.h"
 #import "TCPhoto.h"
 
-static NSString * const kPopoverSegueIdentifier = @"showCategoryList";
+static NSString * const kCategoryPopoverSegueIdentifier = @"showCategoryList";
+static NSString * const kShowPhotoSegueIdentifier = @"showPhoto";
 
 @interface TCThumbnailsViewController ()
 
@@ -45,6 +47,10 @@ static NSString * const kPopoverSegueIdentifier = @"showCategoryList";
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    // Resize the segmented control here, otherwise it will get squished by the autolayout.
+    CGFloat currentHeight = self.featureSegmentedControl.bounds.size.height;
+    self.featureSegmentedControl.bounds = CGRectMake(0, 0, 500, currentHeight);
     
     __weak typeof(self) weakSelf = self;
     
@@ -162,7 +168,7 @@ static NSString * const kPopoverSegueIdentifier = @"showCategoryList";
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    if ([[segue identifier] isEqualToString:kPopoverSegueIdentifier]) {
+    if ([[segue identifier] isEqualToString:kCategoryPopoverSegueIdentifier]) {
         // Save a reference to this segue's popover controller.
         // We will need to dismiss it to dismiss the popover later.
         self.categoryListPopoverController = [(UIStoryboardPopoverSegue *)segue popoverController];
@@ -170,6 +176,7 @@ static NSString * const kPopoverSegueIdentifier = @"showCategoryList";
         // Set up ourself as the delegate, so that we know when a category is selected from the list.
         TCCategoryListViewController *categoryListViewController = [segue destinationViewController];
         categoryListViewController.delegate = self;
+        
     }
 }
 

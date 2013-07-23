@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="2.0" toolsVersion="3084" systemVersion="12E55" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" initialViewController="MuX-O4-3bt">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="2.0" toolsVersion="3084" systemVersion="12E55" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" initialViewController="IV3-Fy-QKa">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="2083"/>
     </dependencies>
@@ -40,47 +40,72 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rx6-06-Rgy" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-293" y="1828"/>
+            <point key="canvasLocation" x="637" y="1708"/>
+        </scene>
+        <!--Photo View Controller-->
+        <scene sceneID="SHC-H5-HZz">
+            <objects>
+                <viewController storyboardIdentifier="TCPhotoViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Tk3-k0-1I0" customClass="TCPhotoViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Iap-Uh-8cJ">
+                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" translatesAutoresizingMaskIntoConstraints="NO" id="dnN-LO-z2F">
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="900" id="VAK-7g-lvB"/>
+                                </constraints>
+                            </imageView>
+                            <label clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Photo Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="O7W-uh-78q">
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="48" id="uxx-1C-1RA"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="35"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="User's Full Name" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GcR-Q5-h9z">
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="20" id="L24-81-gVS"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="bottom" secondItem="GcR-Q5-h9z" secondAttribute="bottom" constant="22" id="0GV-Hn-ZeT"/>
+                            <constraint firstAttribute="trailing" secondItem="dnN-LO-z2F" secondAttribute="trailing" constant="20" symbolic="YES" type="default" id="4MN-pj-wFi"/>
+                            <constraint firstItem="GcR-Q5-h9z" firstAttribute="leading" secondItem="Iap-Uh-8cJ" secondAttribute="leading" constant="20" symbolic="YES" type="default" id="5zn-4U-ng9"/>
+                            <constraint firstItem="dnN-LO-z2F" firstAttribute="top" secondItem="Iap-Uh-8cJ" secondAttribute="top" constant="21" id="HKT-kd-IBe"/>
+                            <constraint firstAttribute="trailing" secondItem="O7W-uh-78q" secondAttribute="trailing" constant="20" symbolic="YES" type="default" id="Ner-S0-Gwm"/>
+                            <constraint firstItem="O7W-uh-78q" firstAttribute="leading" secondItem="Iap-Uh-8cJ" secondAttribute="leading" constant="20" symbolic="YES" type="default" id="cs0-oA-qYQ"/>
+                            <constraint firstItem="dnN-LO-z2F" firstAttribute="leading" secondItem="Iap-Uh-8cJ" secondAttribute="leading" constant="20" symbolic="YES" type="default" id="e4H-lB-kur"/>
+                            <constraint firstAttribute="trailing" secondItem="GcR-Q5-h9z" secondAttribute="trailing" constant="20" symbolic="YES" type="default" id="pRT-0A-ISl"/>
+                            <constraint firstAttribute="bottom" secondItem="O7W-uh-78q" secondAttribute="bottom" constant="48" id="zjr-sF-Igx"/>
+                        </constraints>
+                    </view>
+                    <nil key="simulatedStatusBarMetrics"/>
+                    <connections>
+                        <outlet property="fullNameLabel" destination="GcR-Q5-h9z" id="nmy-5e-bwx"/>
+                        <outlet property="imageView" destination="dnN-LO-z2F" id="zgm-li-1PS"/>
+                        <outlet property="titleLabel" destination="O7W-uh-78q" id="il7-8x-qMC"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="t2E-wb-pAd" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1115" y="1817"/>
         </scene>
         <!--Thumbnails View Controller-->
         <scene sceneID="grM-Lb-8sx">
             <objects>
                 <viewController storyboardIdentifier="TCThumbnailsViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="MuX-O4-3bt" customClass="TCThumbnailsViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bu-FL-V2Q">
-                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                        <rect key="frame" x="0.0" y="44" width="768" height="980"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="J6E-wk-Cq2">
-                                <color key="tintColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
-                                <items>
-                                    <navigationItem id="IiT-E1-eIZ">
-                                        <barButtonItem key="leftBarButtonItem" id="aSa-x9-hDd">
-                                            <segmentedControl key="customView" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="bAB-eK-6nf">
-                                                <rect key="frame" x="7" y="7" width="420" height="31"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                <segments>
-                                                    <segment title="Popular"/>
-                                                    <segment title="Editor's Choice"/>
-                                                    <segment title="Upcoming"/>
-                                                    <segment title="Fresh"/>
-                                                </segments>
-                                                <color key="tintColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="calibratedRGB"/>
-                                                <connections>
-                                                    <action selector="featureChanged:" destination="MuX-O4-3bt" eventType="valueChanged" id="bT0-Zi-apb"/>
-                                                </connections>
-                                            </segmentedControl>
-                                        </barButtonItem>
-                                        <barButtonItem key="rightBarButtonItem" title="All Categories" id="jkZ-TF-1PX">
-                                            <color key="tintColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="calibratedRGB"/>
-                                            <connections>
-                                                <segue destination="twe-ey-dQ4" kind="popover" identifier="showCategoryList" popoverAnchorBarButtonItem="jkZ-TF-1PX" id="P0a-oL-6ii">
-                                                    <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
-                                                </segue>
-                                            </connections>
-                                        </barButtonItem>
-                                    </navigationItem>
-                                </items>
-                            </navigationBar>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" indicatorStyle="white" minimumZoomScale="0.0" maximumZoomScale="0.0" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="iyW-xG-xMZ">
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="5" minimumInteritemSpacing="5" id="Fpo-kM-bJj">
@@ -129,18 +154,40 @@
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="iyW-xG-xMZ" firstAttribute="top" secondItem="J6E-wk-Cq2" secondAttribute="bottom" type="default" id="80p-kE-nt2"/>
                             <constraint firstItem="iyW-xG-xMZ" firstAttribute="leading" secondItem="8bu-FL-V2Q" secondAttribute="leading" type="default" id="Kud-Ra-LA7"/>
-                            <constraint firstItem="J6E-wk-Cq2" firstAttribute="top" secondItem="8bu-FL-V2Q" secondAttribute="top" type="default" id="QfK-Ej-nVh"/>
                             <constraint firstItem="iyW-xG-xMZ" firstAttribute="trailing" secondItem="8bu-FL-V2Q" secondAttribute="trailing" type="default" id="Sou-vQ-7m4"/>
-                            <constraint firstItem="J6E-wk-Cq2" firstAttribute="trailing" secondItem="8bu-FL-V2Q" secondAttribute="trailing" type="default" id="dqQ-rP-7In"/>
+                            <constraint firstItem="iyW-xG-xMZ" firstAttribute="top" secondItem="8bu-FL-V2Q" secondAttribute="top" type="default" id="dwZ-Hx-m5z"/>
                             <constraint firstItem="iyW-xG-xMZ" firstAttribute="bottom" secondItem="8bu-FL-V2Q" secondAttribute="bottom" type="default" id="vAy-gU-uyP"/>
-                            <constraint firstItem="J6E-wk-Cq2" firstAttribute="leading" secondItem="8bu-FL-V2Q" secondAttribute="leading" type="default" id="ytv-Vv-Arv"/>
                         </constraints>
                     </view>
                     <toolbarItems/>
+                    <navigationItem key="navigationItem" id="IiT-E1-eIZ">
+                        <barButtonItem key="leftBarButtonItem" width="500" id="aSa-x9-hDd">
+                            <segmentedControl key="customView" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="bAB-eK-6nf">
+                                <rect key="frame" x="7" y="7" width="500" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <segments>
+                                    <segment title="Popular"/>
+                                    <segment title="Editor's Choice"/>
+                                    <segment title="Upcoming"/>
+                                    <segment title="Fresh"/>
+                                </segments>
+                                <color key="tintColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="calibratedRGB"/>
+                                <connections>
+                                    <action selector="featureChanged:" destination="MuX-O4-3bt" eventType="valueChanged" id="bT0-Zi-apb"/>
+                                </connections>
+                            </segmentedControl>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" title="All Categories" id="jkZ-TF-1PX">
+                            <color key="tintColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="calibratedRGB"/>
+                            <connections>
+                                <segue destination="twe-ey-dQ4" kind="popover" identifier="showCategoryList" popoverAnchorBarButtonItem="jkZ-TF-1PX" id="P0a-oL-6ii">
+                                    <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
+                                </segue>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <nil key="simulatedStatusBarMetrics"/>
-                    <nil key="simulatedTopBarMetrics"/>
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="categoryBarButtonItem" destination="jkZ-TF-1PX" id="dAT-Ao-WmQ"/>
@@ -149,6 +196,26 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="PXb-QS-nMQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-357" y="1828"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="tnX-RT-hbz">
+            <objects>
+                <navigationController id="IV3-Fy-QKa" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <nil key="simulatedStatusBarMetrics"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="rdo-7n-Jmd">
+                        <rect key="frame" x="0.0" y="0.0" width="768" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="tintColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="MuX-O4-3bt" kind="relationship" relationship="rootViewController" id="nJH-PV-dNY"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Dfc-Ug-gHB" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-1331" y="1828"/>
         </scene>
@@ -168,6 +235,14 @@
             <relationships>
                 <relationship kind="outlet" name="activityIndicator" candidateClass="UIActivityIndicatorView"/>
                 <relationship kind="outlet" name="imageView" candidateClass="UIImageView"/>
+            </relationships>
+        </class>
+        <class className="TCPhotoViewController" superclassName="UIViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/TCPhotoViewController.h"/>
+            <relationships>
+                <relationship kind="outlet" name="fullNameLabel" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="imageView" candidateClass="UIImageView"/>
+                <relationship kind="outlet" name="titleLabel" candidateClass="UILabel"/>
             </relationships>
         </class>
         <class className="TCThumbnailsViewController" superclassName="UIViewController">

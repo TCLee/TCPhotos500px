@@ -15,6 +15,9 @@
 @property (strong, nonatomic) IBOutlet UIImageView *imageView;
 @property (strong, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
 
-- (void)setPhoto:(TCPhoto *)photo;
+/*
+ The photo model that this cell renders.
+ */
+@property (strong, nonatomic) TCPhoto *photo;
 
 @end

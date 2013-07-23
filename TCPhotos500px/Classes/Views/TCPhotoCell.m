@@ -15,14 +15,19 @@
 
 @implementation TCPhotoCell
 
-- (void)setPhoto:(TCPhoto *)photo
-{    
+- (void)setPhoto:(TCPhoto *)newPhoto
+{
+    // Do nothing, if attempting we're given the same photo model object.
+    if (_photo == newPhoto) { return; }
+    
+    _photo = newPhoto;
+    
     // Refer to Apple's Transitioning to ARC Release Notes on non-trivial cycles.
     // Non-trivial in this case means we're using weakSelf multiple times in the block.
     // So, weakSelf may become nil during the execution of the block.
     __weak typeof(self) weakSelf = self;
     
-    [self.imageView setImageWithURL:photo.thumbnailURL placeholderImage:nil options:0 completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
+    [self.imageView setImageWithURL:_photo.thumbnailURL placeholderImage:nil options:0 completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
         __strong typeof(self) strongSelf = weakSelf;
         
         if (image) {

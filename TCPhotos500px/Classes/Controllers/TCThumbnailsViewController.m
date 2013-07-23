@@ -103,6 +103,9 @@ static NSString * const kSegueIdentifierPhotoView = @"showPhoto";
     // Call reloadData to trigger the data source methods to lazily fetch the photo
     // stream's pages.
     [self.collectionView reloadData];
+    
+    // Scroll back to top when reloading a new photo stream.
+    [self.collectionView setContentOffset:CGPointZero animated:NO];
 }
 
 #pragma mark - UICollectionView Data Source

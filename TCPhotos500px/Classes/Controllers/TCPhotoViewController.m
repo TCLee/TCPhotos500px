@@ -21,6 +21,8 @@
 
 @implementation TCPhotoViewController
 
+#pragma mark - View Life Cycle
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -28,12 +30,39 @@
 	[self reloadView];
 }
 
-//#pragma mark - Memory Management
-//
-//- (void)didReceiveMemoryWarning
-//{
-//    [super didReceiveMemoryWarning];
-//}
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    // Add tap gesture recognizer in viewDidAppear because our view is now added
+    // to the window.
+    [self addTapToDismissGesture];
+}
+
+#pragma mark - Dismiss Modal View on Tap Gesture
+
+- (void)addTapToDismissGesture
+{
+    UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapToDismiss:)];
+    tapGestureRecognizer.numberOfTapsRequired = 1;
+    
+    // So the user can still interact with controls in the modal view.
+    tapGestureRecognizer.cancelsTouchesInView = NO;
+    
+    // Add gesture recognizer to window instead of the view to detect taps outside
+    // the modal view.
+    [self.view.window addGestureRecognizer:tapGestureRecognizer];
+}
+
+- (void)handleTapToDismiss:(UITapGestureRecognizer *)sender
+{
+    if (UIGestureRecognizerStateRecognized == sender.state) {
+        [self.view.window removeGestureRecognizer:sender];
+        [self dismissViewControllerAnimated:YES completion:^{
+            
+        }];
+    }
+}
 
 #pragma mark - Photo Model
 

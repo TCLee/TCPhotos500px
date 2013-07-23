@@ -24,16 +24,18 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	// Do any additional setup after loading the view.
+    
+	[self reloadView];
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
+//#pragma mark - Memory Management
+//
+//- (void)didReceiveMemoryWarning
+//{
+//    [super didReceiveMemoryWarning];
+//}
 
-#pragma mark -
+#pragma mark - Photo Model
 
 - (void)setPhoto:(TCPhoto *)newPhoto
 {
@@ -44,9 +46,10 @@
     }
 }
 
+/* Updates the view with the photo model's data. */
 - (void)reloadView
 {
-    [self.imageView setImageWithURL:self.photo.thumbnailURL];
+    [self.imageView setImageWithURL:self.photo.imageURL];
     self.titleLabel.text = self.photo.title;
     self.fullNameLabel.text = self.photo.userFullName;
 }

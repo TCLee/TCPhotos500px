@@ -13,8 +13,9 @@
 #import "TCPhotoStreamCategory.h"
 #import "TCPhoto.h"
 
-static NSString * const kCategoryPopoverSegueIdentifier = @"showCategoryList";
-static NSString * const kShowPhotoSegueIdentifier = @"showPhoto";
+// Storyboard Segue IDs
+static NSString * const kSegueIdentifierCategoryPopover = @"showCategoryList";
+static NSString * const kSegueIdentifierPhotoView = @"showPhoto";
 
 @interface TCThumbnailsViewController ()
 
@@ -133,9 +134,7 @@ static NSString * const kShowPhotoSegueIdentifier = @"showPhoto";
     }];
     
     // Display photo on the cell, if photo is available.
-    if (photo) {
-        [cell setPhoto:photo];
-    }    
+    [cell setPhoto:photo];
     return cell;
 }
 
@@ -157,18 +156,25 @@ static NSString * const kShowPhotoSegueIdentifier = @"showPhoto";
 
 - (BOOL)shouldPerformSegueWithIdentifier:(NSString *)identifier sender:(id)sender
 {
-    // If the popover is already showing, we'll dismiss it.
-    if (self.categoryListPopoverController) {
-        [self.categoryListPopoverController dismissPopoverAnimated:YES];
-        return NO;
+    if ([identifier isEqualToString:kSegueIdentifierCategoryPopover]) {
+        // If the popover is already showing, we'll dismiss it and not show it again.
+        // Otherwise, we will have multiple popovers stacked over each other.
+        if (self.categoryListPopoverController) {
+            [self.categoryListPopoverController dismissPopoverAnimated:YES];
+            return NO;
+        }
+    } else if ([identifier isEqualToString:kSegueIdentifierPhotoView]) {
+        // If photo model is available, then we can show the full size photo.
+        return nil != [(TCPhotoCell *)sender photo];
     }
     
+    // By default, we want to perform the segue.
     return YES;
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    if ([[segue identifier] isEqualToString:kCategoryPopoverSegueIdentifier]) {
+    if ([[segue identifier] isEqualToString:kSegueIdentifierCategoryPopover]) {
         // Save a reference to this segue's popover controller.
         // We will need to dismiss it to dismiss the popover later.
         self.categoryListPopoverController = [(UIStoryboardPopoverSegue *)segue popoverController];
@@ -177,6 +183,9 @@ static NSString * const kShowPhotoSegueIdentifier = @"showPhoto";
         TCCategoryListViewController *categoryListViewController = [segue destinationViewController];
         categoryListViewController.delegate = self;
         
+    } else if ([[segue identifier] isEqualToString:kSegueIdentifierPhotoView]) {
+        TCPhotoViewController *photoViewController = [segue destinationViewController];
+        [photoViewController setPhoto:[(TCPhotoCell *)sender photo]];
     }
 }
 

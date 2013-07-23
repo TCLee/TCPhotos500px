@@ -52,7 +52,7 @@ typedef void(^TCPhotoStreamPageCompletionBlock)(TCPhotoStreamPage *page, NSError
     TCPhotoStreamPage *page = [self pageAtIndex:pageIndex];
     
     // If page is available, we will return the photo in the page.
-    // If we're currently fetching the page, this will prevent us from fetching
+    // If we're currently fetching the page, this will also prevent us from fetching
     // the same page again.
     if (page) {
         TCPhoto *photo = [page photoAtIndex:photoIndexWithinPage];
@@ -66,7 +66,7 @@ typedef void(^TCPhotoStreamPageCompletionBlock)(TCPhotoStreamPage *page, NSError
     
     // Fetch the page's photos asynchronously.
     [self fetchPage:page completion:^(TCPhotoStreamPage *page, NSError *error) {
-        TCPhoto *photo = page ? [page photoAtIndex:photoIndexWithinPage] : nil;
+        TCPhoto *photo = [page photoAtIndex:photoIndexWithinPage];
         completionBlock(photo, error);
     }];
     
@@ -106,9 +106,7 @@ typedef void(^TCPhotoStreamPageCompletionBlock)(TCPhotoStreamPage *page, NSError
     
     // By default, we exclude Nude photos to make this app child-friendly.
     [PXRequest requestForPhotoFeature:self.feature resultsPerPage:kPXAPIHelperDefaultResultsPerPage page:page.pageNumber photoSizes:(PXPhotoModelSizeThumbnail|PXPhotoModelSizeLarge) sortOrder:kPXAPIHelperDefaultSortOrder except:PXPhotoModelCategoryNude only:self.category completion:^(NSDictionary *results, NSError *error) {
-        if (results) {
-            NSLog(@"%@", results);
-            
+        if (results) {                    
             [blockPage setAttributes:results];
             
             // Update the total number of pages and photos in this photo stream.

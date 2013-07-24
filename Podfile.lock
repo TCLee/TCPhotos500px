@@ -15,16 +15,19 @@ PODS:
   - SDWebImage/MapKit (3.3):
     - libwebp
   - SVPullToRefresh (0.4.1)
+  - UAModalPanel (1.1.1)
 
 DEPENDENCIES:
   - 500px-iOS-api (~> 1.0.3)
   - SDWebImage (~> 3.3)
   - SVPullToRefresh (~> 0.4.1)
+  - UAModalPanel (~> 1.1.1)
 
 SPEC CHECKSUMS:
   500px-iOS-api: 720d14d188a03e92006ad1af5e65f9da6330b2a1
   libwebp: 40517fa1fd3716eded73b4696c45fc0b66e4b414
   SDWebImage: 79a8bac9ccf85b269100b294f7b43684dab8bf8a
   SVPullToRefresh: 61a0e4bd12bd6f8e3465909810b0fbeb1a28d5f2
+  UAModalPanel: e0f697b4d89ccf0f07c3dc2eb7d17d0e3cb7fe56
 
 COCOAPODS: 0.22.2

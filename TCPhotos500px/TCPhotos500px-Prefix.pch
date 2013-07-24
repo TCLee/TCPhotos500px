@@ -20,6 +20,9 @@
     // https://github.com/500px/500px-iOS-api
     #import "PXAPI.h"
 
+    // https://github.com/rs/SDWebImage
+    #import "UIImageView+WebCache.h"
+
     // https://github.com/samvermette/SVPullToRefresh
     #import "UIScrollView+SVPullToRefresh.h"
 

@@ -96,19 +96,41 @@
     SDImageCache *imageCache = [SDImageCache sharedImageCache];
     UIImage *thumbnail = [imageCache imageFromDiskCacheForKey:[self.photo.thumbnailURL absoluteString]];
     
+#warning Use MBProgressHUD instead. It's more flexible.
     // Show progress hud over photo while loading.
     [SVProgressHUD show];
     
     [self.imageView setImageWithURL:self.photo.imageURL placeholderImage:thumbnail options:0 completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
         [SVProgressHUD dismiss];
-        
-        NSLog(@"Image Size = %@", NSStringFromCGSize(image.size));        
-        CGSize imageSize = image.size;
-        self.view.superview.bounds = CGRectMake(0, 0, imageSize.width, imageSize.height);
+
+        [self sizeViewToFitImage:image];
     }];
     
     self.titleLabel.text = self.photo.title;
     self.fullNameLabel.text = self.photo.userFullName;
+}
+
+- (void)sizeViewToFitImage:(UIImage *)image
+{
+    // Use the root view's bounds so that it takes into account the
+    // device orientation (portrait or landscape).
+    CGSize windowSize = self.view.window.rootViewController.view.bounds.size;
+    CGSize imageSize = image.size;        
+    
+    NSLog(@"Window Size = %@", NSStringFromCGSize(windowSize));
+    NSLog(@"Image Size = %@", NSStringFromCGSize(imageSize));
+    
+    CGFloat scaleFactor = 1.0f;    
+    if (imageSize.width > windowSize.width) {
+        scaleFactor = windowSize.width / imageSize.width;
+    } else if (imageSize.height > windowSize.height) {
+        scaleFactor = windowSize.height / imageSize.height;
+    }    
+    
+    CGSize modalViewSize = CGSizeMake(floorf(imageSize.width * scaleFactor), floorf(imageSize.height * scaleFactor));
+    NSLog(@"Modal Size = %@", NSStringFromCGSize(modalViewSize));
+    
+    self.view.superview.bounds = CGRectMake(0, 0, modalViewSize.width, modalViewSize.height);
 }
 
 @end

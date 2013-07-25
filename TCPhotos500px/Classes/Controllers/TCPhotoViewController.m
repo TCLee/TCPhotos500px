@@ -38,10 +38,11 @@
 {
     [super viewDidAppear:animated];
     
+    // Set the initial size of the modal view.
     // The bounds of the modal's superview determines the size of our content view
     // presented on the screen. Also set it in viewDidAppear, otherwise it will not take effect.
-    // http://stackoverflow.com/a/4271364
-    self.view.superview.bounds = CGRectMake(0.0f, 0.0f, 600.0f, 600.0f);
+    // Reference: http://stackoverflow.com/a/4271364
+    self.view.superview.bounds = CGRectMake(0.0f, 0.0f, 500.0f, 500.0f);
     
     // Add tap gesture recognizer in viewDidAppear because our view is now added
     // to the window.
@@ -130,7 +131,10 @@
     CGSize modalViewSize = CGSizeMake(floorf(imageSize.width * scaleFactor), floorf(imageSize.height * scaleFactor));
     NSLog(@"Modal Size = %@", NSStringFromCGSize(modalViewSize));
     
-    self.view.superview.bounds = CGRectMake(0, 0, modalViewSize.width, modalViewSize.height);
+    // Animate the bounds changing.
+    [UIView animateWithDuration:0.7f animations:^{
+        self.view.superview.bounds = CGRectMake(0, 0, modalViewSize.width, modalViewSize.height);
+    }];
 }
 
 @end

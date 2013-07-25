@@ -71,8 +71,8 @@
                         <constraints>
                             <constraint firstItem="GcR-Q5-h9z" firstAttribute="trailing" secondItem="Iap-Uh-8cJ" secondAttribute="trailing" type="default" id="8Ff-BN-JEW"/>
                             <constraint firstItem="O7W-uh-78q" firstAttribute="trailing" secondItem="Iap-Uh-8cJ" secondAttribute="trailing" type="default" id="GAJ-wa-UOC"/>
-                            <constraint firstItem="GcR-Q5-h9z" firstAttribute="bottom" secondItem="Iap-Uh-8cJ" secondAttribute="bottom" type="default" id="M3z-QN-LPU"/>
-                            <constraint firstAttribute="bottom" secondItem="O7W-uh-78q" secondAttribute="bottom" constant="20" symbolic="YES" type="default" id="Oex-wV-e1h"/>
+                            <constraint firstItem="GcR-Q5-h9z" firstAttribute="bottom" secondItem="Iap-Uh-8cJ" secondAttribute="bottom" type="user" id="M3z-QN-LPU"/>
+                            <constraint firstItem="GcR-Q5-h9z" firstAttribute="top" secondItem="O7W-uh-78q" secondAttribute="bottom" constant="5" type="user" id="Qp9-At-tR3"/>
                             <constraint firstItem="dnN-LO-z2F" firstAttribute="top" secondItem="Iap-Uh-8cJ" secondAttribute="top" type="default" id="Sel-Nu-ROT"/>
                             <constraint firstItem="dnN-LO-z2F" firstAttribute="leading" secondItem="Iap-Uh-8cJ" secondAttribute="leading" type="default" id="UYp-rT-rXA"/>
                             <constraint firstItem="dnN-LO-z2F" firstAttribute="bottom" secondItem="Iap-Uh-8cJ" secondAttribute="bottom" type="default" id="alM-Xj-V0V"/>

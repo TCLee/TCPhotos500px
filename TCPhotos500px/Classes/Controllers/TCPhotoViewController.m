@@ -10,6 +10,7 @@
 #import "TCPhoto.h"
 
 #import "UIImageView+WebCache.h"
+#import "SVProgressHUD.h"
 
 #import <QuartzCore/QuartzCore.h>
 
@@ -29,20 +30,18 @@
 {
     [super viewWillAppear:animated];
         
-    // Remove rounded corner and shadow from the modal view.
+    // Remove rounded corner from the modal view.
     self.view.layer.cornerRadius = 0.0f;
-    self.view.layer.shadowOpacity = 0.0f;
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
     
-#warning Hard-coded values. Should calculate size based on device orientation.
     // The bounds of the modal's superview determines the size of our content view
     // presented on the screen. Also set it in viewDidAppear, otherwise it will not take effect.
     // http://stackoverflow.com/a/4271364
-    self.view.superview.bounds = CGRectMake(0.0f, 0.0f, 700.0f, 650.0f);
+    self.view.superview.bounds = CGRectMake(0.0f, 0.0f, 600.0f, 600.0f);
     
     // Add tap gesture recognizer in viewDidAppear because our view is now added
     // to the window.
@@ -75,9 +74,7 @@
         
         // Automatically forwards message to the presenting view controller (parent)
         // to dismiss this presented view controller (child).
-        [self dismissViewControllerAnimated:NO completion:^{
-            
-        }];
+        [self dismissViewControllerAnimated:NO completion:NULL];
     }
 }
 
@@ -95,14 +92,19 @@
 // Updates the view with the photo model's data.
 - (void)configureView
 {
-    //TODO: Perhaps show the thumbnail while we load the actual image?
-    [self.imageView setImageWithURL:self.photo.imageURL placeholderImage:nil options:0 completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
-//        NSLog(@"Image Size = %@", NSStringFromCGSize(image.size));
-//        
-//        if (image) {
-//            CGSize imageSize = image.size;
-//            self.view.superview.bounds = CGRectMake(0, 0, imageSize.width * 0.8, imageSize.height * 0.8);
-//        }
+    // Get the thumbnail from the cache.
+    SDImageCache *imageCache = [SDImageCache sharedImageCache];
+    UIImage *thumbnail = [imageCache imageFromDiskCacheForKey:[self.photo.thumbnailURL absoluteString]];
+    
+    // Show progress hud over photo while loading.
+    [SVProgressHUD show];
+    
+    [self.imageView setImageWithURL:self.photo.imageURL placeholderImage:thumbnail options:0 completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
+        [SVProgressHUD dismiss];
+        
+        NSLog(@"Image Size = %@", NSStringFromCGSize(image.size));        
+        CGSize imageSize = image.size;
+        self.view.superview.bounds = CGRectMake(0, 0, imageSize.width, imageSize.height);
     }];
     
     self.titleLabel.text = self.photo.title;

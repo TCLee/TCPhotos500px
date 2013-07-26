@@ -48,7 +48,7 @@ typedef NS_ENUM(NSInteger, TCPhotoSize) {
                 break;
             
             case TCPhotoSizeLarge:
-                _imageURL = imageURL;
+                _photoURL = imageURL;
                 break;
                 
             default:

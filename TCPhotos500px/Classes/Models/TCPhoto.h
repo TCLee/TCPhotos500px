@@ -19,7 +19,7 @@
 @property (nonatomic, weak, readonly) TCPhotoStreamPage *photoStreamPage;
 
 @property (nonatomic, copy, readonly) NSURL *thumbnailURL;
-@property (nonatomic, copy, readonly) NSURL *imageURL;
+@property (nonatomic, copy, readonly) NSURL *photoURL;
 @property (nonatomic, copy, readonly) NSString *title;
 @property (nonatomic, copy, readonly) NSString *userFullName;
 

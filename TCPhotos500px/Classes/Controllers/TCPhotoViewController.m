@@ -52,6 +52,22 @@
     [self configureView];
 }
 
+#pragma mark - View Rotation
+
+// When the view is rotated, we also have to make changes to our modal view's bounds.
+// Otherwise, the image will be clipped at the screen edges.
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+    
+#warning Place image and thumbnail in Photo model for easy retrieval.
+    // Get the downloaded image from the cache.
+    SDImageCache *imageCache = [SDImageCache sharedImageCache];
+    UIImage *image = [imageCache imageFromDiskCacheForKey:[self.photo.imageURL absoluteString]];
+    
+    [self sizeViewToFitImage:image];
+}
+
 #pragma mark - Dismiss Modal View on Tap Gesture
 
 // StackOverflow: Tap to Dismiss http://stackoverflow.com/a/6180584
@@ -111,8 +127,11 @@
     self.fullNameLabel.text = self.photo.userFullName;
 }
 
+//TODO: Should include some margin from the edge of the screen.
 - (void)sizeViewToFitImage:(UIImage *)image
 {
+    if (!image) { return; }
+    
     // Use the root view's bounds so that it takes into account the
     // device orientation (portrait or landscape).
     CGSize windowSize = self.view.window.rootViewController.view.bounds.size;
@@ -132,7 +151,7 @@
     NSLog(@"Modal Size = %@", NSStringFromCGSize(modalViewSize));
     
     // Animate the bounds changing.
-    [UIView animateWithDuration:0.7f animations:^{
+    [UIView animateWithDuration:0.6f animations:^{
         self.view.superview.bounds = CGRectMake(0, 0, modalViewSize.width, modalViewSize.height);
     }];
 }

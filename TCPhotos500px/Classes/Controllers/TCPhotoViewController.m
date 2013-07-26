@@ -20,7 +20,12 @@
 @property (nonatomic, weak) IBOutlet UILabel *titleLabel;
 @property (nonatomic, weak) IBOutlet UILabel *fullNameLabel;
 
+// The size of the actual photo to display on the image view.
+@property (nonatomic, assign) CGSize photoSize;
+
 @end
+
+#pragma mark -
 
 @implementation TCPhotoViewController
 
@@ -54,18 +59,13 @@
 
 #pragma mark - View Rotation
 
-// When the view is rotated, we also have to make changes to our modal view's bounds.
-// Otherwise, the image will be clipped at the screen edges.
+// When the view is rotated, we also have to make changes to our view's bounds.
+// Otherwise, the photo will be clipped at the screen edges.
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
     [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
-    
-#warning Place image and thumbnail in Photo model for easy retrieval.
-    // Get the downloaded image from the cache.
-    SDImageCache *imageCache = [SDImageCache sharedImageCache];
-    UIImage *image = [imageCache imageFromDiskCacheForKey:[self.photo.imageURL absoluteString]];
-    
-    [self sizeViewToFitImage:image];
+        
+    [self sizeViewToAspectFitPhotoAnimated:YES];
 }
 
 #pragma mark - Dismiss Modal View on Tap Gesture
@@ -109,51 +109,89 @@
 // Updates the view with the photo model's data.
 - (void)configureView
 {
-    // Get the thumbnail from the cache.
+    // Get the thumbnail from the memory or disk cache.
+    // We'll display the low resolution thumbnail while we load the larger size
+    // photo in the background.
     SDImageCache *imageCache = [SDImageCache sharedImageCache];
     UIImage *thumbnail = [imageCache imageFromDiskCacheForKey:[self.photo.thumbnailURL absoluteString]];
     
-#warning Use MBProgressHUD instead. It's more flexible.
+#warning Use MBProgressHUD instead, so that we can attach the progress HUD to the UIImageView, not to UIWindow.
     // Show progress hud over photo while loading.
     [SVProgressHUD show];
     
-    [self.imageView setImageWithURL:self.photo.imageURL placeholderImage:thumbnail options:0 completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
+    [self.imageView setImageWithURL:self.photo.photoURL placeholderImage:thumbnail options:0 completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
         [SVProgressHUD dismiss];
 
-        [self sizeViewToFitImage:image];
+        // Save the original photo size, so that we can resize the view again
+        // when view is rotated.
+        self.photoSize = image.size;        
+        [self sizeViewToAspectFitPhotoAnimated:YES];
     }];
     
     self.titleLabel.text = self.photo.title;
     self.fullNameLabel.text = self.photo.userFullName;
 }
 
-//TODO: Should include some margin from the edge of the screen.
-- (void)sizeViewToFitImage:(UIImage *)image
+#pragma mark - Resize View to Aspect Fit Photo
+
+/*
+ Resizes this view to aspect fit the photo without exceeding the window's bounds.
+ */
+- (void)sizeViewToAspectFitPhotoAnimated:(BOOL)animated
 {
-    if (!image) { return; }
+    // Invalid photo size. Do nothing.
+    if (0 == self.photoSize.width || 0 == self.photoSize.height) {
+        return;
+    }
     
+    // Calculate scale factor required to aspect fit the photo.
+    CGFloat scaleFactor = [self scaleFactorForViewToAspectFitPhoto];
+    
+    // Create the view's new bounds from the scaled size.
+    CGSize viewSize = CGSizeMake(floorf(self.photoSize.width * scaleFactor),
+                                 floorf(self.photoSize.height * scaleFactor));
+    CGRect viewBounds = CGRectMake(0, 0, viewSize.width, viewSize.height);
+    
+    NSLog(@"View Size = %@", NSStringFromCGSize(viewSize));
+    
+    // Animate the bounds changing, if animation is wanted.
+    if (animated) {
+        [UIView animateWithDuration:0.6f animations:^{
+            self.view.superview.bounds = viewBounds;
+        }];
+    } else {
+        self.view.superview.bounds = viewBounds;
+    }
+}
+
+// The padding from the view's edge to the window's edge.
+static CGFloat const kViewToWindowPadding = 60.0f;
+
+/*
+ Calculate the scale factor to resize view so that it aspect fits the
+ photo within the window bounds (with some margin spacing).
+ */
+- (CGFloat)scaleFactorForViewToAspectFitPhoto
+{
     // Use the root view's bounds so that it takes into account the
     // device orientation (portrait or landscape).
     CGSize windowSize = self.view.window.rootViewController.view.bounds.size;
-    CGSize imageSize = image.size;        
     
     NSLog(@"Window Size = %@", NSStringFromCGSize(windowSize));
-    NSLog(@"Image Size = %@", NSStringFromCGSize(imageSize));
-    
+    NSLog(@"Photo Size = %@", NSStringFromCGSize(self.photoSize));
+        
+    // Include a padding space, so that scaled view will not be too close to
+    // the window's edge.
+    CGSize photoWithPaddingSize = CGSizeMake(self.photoSize.width + kViewToWindowPadding,
+                                            self.photoSize.height + kViewToWindowPadding);
     CGFloat scaleFactor = 1.0f;    
-    if (imageSize.width > windowSize.width) {
-        scaleFactor = windowSize.width / imageSize.width;
-    } else if (imageSize.height > windowSize.height) {
-        scaleFactor = windowSize.height / imageSize.height;
-    }    
+    if (photoWithPaddingSize.width > windowSize.width) {
+        scaleFactor = windowSize.width / photoWithPaddingSize.width;
+    } else if (photoWithPaddingSize.height > windowSize.height) {
+        scaleFactor = windowSize.height / photoWithPaddingSize.height;
+    }
     
-    CGSize modalViewSize = CGSizeMake(floorf(imageSize.width * scaleFactor), floorf(imageSize.height * scaleFactor));
-    NSLog(@"Modal Size = %@", NSStringFromCGSize(modalViewSize));
-    
-    // Animate the bounds changing.
-    [UIView animateWithDuration:0.6f animations:^{
-        self.view.superview.bounds = CGRectMake(0, 0, modalViewSize.width, modalViewSize.height);
-    }];
+    return scaleFactor;
 }
 
 @end

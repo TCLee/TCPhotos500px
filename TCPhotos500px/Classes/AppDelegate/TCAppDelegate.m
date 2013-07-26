@@ -12,7 +12,6 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    // TODO: Go to the 500px Applications page to register for your own API key.
     [PXRequest setConsumerKey:@"J6iaaiJkAk30W3rQkH7vcfaJU3iGLEHPFPfF1K2T"
                consumerSecret:@"kPuyVyMtOFAttVfFHcfYFsTi6fcaBbBolK8BUbE8"];
     

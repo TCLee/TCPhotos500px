@@ -1,6 +1,5 @@
 platform :ios, '6.0'
-#pod 'AFNetworking', '~> 1.3.1'
 pod '500px-iOS-api', '~> 1.0.3'
 pod 'SDWebImage', '~> 3.3'
 pod 'SVPullToRefresh', '~> 0.4.1'
-pod 'SVProgressHUD', '~> 0.9'
+pod 'MBProgressHUD', '~> 0.7'

@@ -10,7 +10,7 @@
 #import "TCPhoto.h"
 
 #import "UIImageView+WebCache.h"
-#import "SVProgressHUD.h"
+#import "MBProgressHUD.h"
 
 #import <QuartzCore/QuartzCore.h>
 
@@ -102,31 +102,38 @@
     if (_photo != newPhoto) {
         _photo = newPhoto;
         
-        [self configureView];
+//        [self configureView];
     }
 }
 
 // Updates the view with the photo model's data.
 - (void)configureView
 {
-    // Get the thumbnail from the memory or disk cache.
+    // Get the thumbnail from the memory (if available) or disk cache.
     // We'll display the low resolution thumbnail while we load the larger size
     // photo in the background.
     SDImageCache *imageCache = [SDImageCache sharedImageCache];
     UIImage *thumbnail = [imageCache imageFromDiskCacheForKey:[self.photo.thumbnailURL absoluteString]];
     
-#warning Use MBProgressHUD instead, so that we can attach the progress HUD to the UIImageView, not to UIWindow.
-    // Show progress hud over photo while loading.
-    [SVProgressHUD show];
+    // If photo is in memory cache, we can just display the image immediately.
+    // So, there's no need to show a progress HUD. Otherwise, the progress HUD will
+    // flash on screen and disappear.
+    UIImage *photo = [imageCache imageFromMemoryCacheForKey:[self.photo.photoURL absoluteString]];
     
-    [self.imageView setImageWithURL:self.photo.photoURL placeholderImage:thumbnail options:0 completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
-        [SVProgressHUD dismiss];
-
-        // Save the original photo size, so that we can resize the view again
-        // when view is rotated.
-        self.photoSize = image.size;        
+    if (photo) {
+        self.imageView.image = photo;
+        self.photoSize = photo.size;
         [self sizeViewToAspectFitPhotoAnimated:YES];
-    }];
+    } else {
+        [MBProgressHUD showHUDAddedTo:self.imageView animated:YES];
+        
+        // Load image asynchronously from network or disk cache.
+        [self.imageView setImageWithURL:self.photo.photoURL placeholderImage:thumbnail options:0 completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
+            [MBProgressHUD hideHUDForView:self.imageView animated:YES];
+            self.photoSize = image.size;
+            [self sizeViewToAspectFitPhotoAnimated:YES];
+        }];
+    }
     
     self.titleLabel.text = self.photo.title;
     self.fullNameLabel.text = self.photo.userFullName;

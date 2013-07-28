@@ -138,7 +138,7 @@
                                 <connections>
                                     <outlet property="activityIndicator" destination="AAZ-qO-8Lh" id="Wq5-yF-kq6"/>
                                     <outlet property="imageView" destination="awj-r4-OrM" id="Cbc-fj-BhZ"/>
-                                    <segue destination="Tk3-k0-1I0" kind="modal" identifier="showPhoto" modalPresentationStyle="formSheet" animates="NO" id="i1B-Dg-noc"/>
+                                    <segue destination="Tk3-k0-1I0" kind="modal" identifier="showPhoto" customClass="TCPhotoZoomInSegue" modalPresentationStyle="formSheet" id="pR8-0u-Qta"/>
                                 </connections>
                             </collectionViewCell>
                         </cells>

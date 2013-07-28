@@ -7,7 +7,7 @@
         <!--Category List View Controller-->
         <scene sceneID="8ie-Ip-u0W">
             <objects>
-                <tableViewController storyboardIdentifier="TCSideMenuViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="twe-ey-dQ4" customClass="TCCategoryListViewController" sceneMemberID="viewController">
+                <tableViewController storyboardIdentifier="TCCategoryListViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="twe-ey-dQ4" customClass="TCCategoryListViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" directionalLockEnabled="YES" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="none" showsSelectionImmediatelyOnTouchBegin="NO" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="Di6-f8-UB3">
                         <rect key="frame" x="0.0" y="0.0" width="220" height="550"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -47,7 +47,7 @@
             <objects>
                 <viewController storyboardIdentifier="TCPhotoViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Tk3-k0-1I0" customClass="TCPhotoViewController" sceneMemberID="viewController">
                     <view key="view" clipsSubviews="YES" contentMode="scaleToFill" id="Iap-Uh-8cJ">
-                        <rect key="frame" x="0.0" y="0.0" width="540" height="620"/>
+                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" translatesAutoresizingMaskIntoConstraints="NO" id="dnN-LO-z2F">
@@ -138,7 +138,6 @@
                                 <connections>
                                     <outlet property="activityIndicator" destination="AAZ-qO-8Lh" id="Wq5-yF-kq6"/>
                                     <outlet property="imageView" destination="awj-r4-OrM" id="Cbc-fj-BhZ"/>
-                                    <segue destination="Tk3-k0-1I0" kind="modal" identifier="showPhoto" customClass="TCPhotoZoomInSegue" modalPresentationStyle="formSheet" id="pR8-0u-Qta"/>
                                 </connections>
                             </collectionViewCell>
                         </cells>

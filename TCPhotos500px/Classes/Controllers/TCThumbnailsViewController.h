@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 
 #import "TCCategoryListViewController.h"
+#import "TCDimmingView.h"
 
 /*
  Displays a grid of thumbnails using UICollectionView.
@@ -16,6 +17,6 @@
  performance.
  */
 @interface TCThumbnailsViewController : UICollectionViewController
-    <TCCategoryListViewControllerDelegate>
+    <TCCategoryListViewControllerDelegate, TCDimmingViewDelegate>
 
 @end

@@ -26,6 +26,8 @@ static NSString * const kSegueIdentifierPhotoView = @"showPhoto";
 // Show a popover for the list of categories to filter the photo stream.
 @property (nonatomic, weak) UIPopoverController *categoryListPopoverController;
 
+@property (nonatomic, strong, readonly) TCDimmingView *dimView;
+
 // Photo Stream model that is presented on the collection view.
 @property (nonatomic, strong) TCPhotoStream *photoStream;
 
@@ -41,7 +43,29 @@ static NSString * const kSegueIdentifierPhotoView = @"showPhoto";
 
 @implementation TCThumbnailsViewController
 
+@synthesize dimView = _dimView;
 @synthesize photoStreamFeatures = _photoStreamFeatures;
+
+#pragma mark - Lazy Properties
+
+- (TCDimmingView *)dimView
+{
+    if (!_dimView) {
+        _dimView = [[TCDimmingView alloc] initWithDelegate:self];
+    }
+    return _dimView;
+}
+
+- (NSArray *)photoStreamFeatures
+{
+    if (!_photoStreamFeatures) {
+        _photoStreamFeatures = @[@(PXAPIHelperPhotoFeaturePopular),
+                                 @(PXAPIHelperPhotoFeatureEditors),
+                                 @(PXAPIHelperPhotoFeatureUpcoming),
+                                 @(PXAPIHelperPhotoFeatureFreshToday)];
+    }
+    return _photoStreamFeatures;
+}
 
 #pragma mark - View Life Cycle
 
@@ -141,6 +165,24 @@ static NSString * const kSegueIdentifierPhotoView = @"showPhoto";
     return cell;
 }
 
+#pragma mark - UICollectionView Delegate
+
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
+{
+//    TCPhotoCell *photoCell = (TCPhotoCell *)[collectionView cellForItemAtIndexPath:indexPath];
+
+    // Add the dimming view to the window, so that it covers every other view below it.
+    [self.dimView addToSuperview:self.view.window animated:YES];
+}
+
+#pragma mark - TCDimmingView Delegate
+
+// Dismiss the modal views when a tap gesture is recognized.
+- (void)dimmingViewDidReceiveTapGesture:(TCDimmingView *)dimmingView
+{
+    [dimmingView removeFromSuperviewAnimated:YES];
+}
+
 #pragma mark - TCCategoryListViewController Delegate
 
 // Dismiss popover and reload photo stream with selected category.
@@ -193,17 +235,6 @@ static NSString * const kSegueIdentifierPhotoView = @"showPhoto";
 }
 
 #pragma mark - IBAction
-
-- (NSArray *)photoStreamFeatures
-{
-    if (!_photoStreamFeatures) {
-        _photoStreamFeatures = @[@(PXAPIHelperPhotoFeaturePopular),
-                                 @(PXAPIHelperPhotoFeatureEditors),
-                                 @(PXAPIHelperPhotoFeatureUpcoming),                                 
-                                 @(PXAPIHelperPhotoFeatureFreshToday)];
-    }
-    return _photoStreamFeatures;
-}
 
 // Reload photo stream with new selected feature.
 - (IBAction)featureChanged:(id)sender

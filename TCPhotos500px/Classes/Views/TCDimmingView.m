@@ -105,12 +105,12 @@ static NSTimeInterval const kAnimationDuration = 0.5f;
     
     // Basically, we're specifying the dimming view has zero margins to its superview.
     // (i.e. it will grow in size with the superview)
-    NSArray *horizontalConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[dimmingView]-0-|"
+    NSArray *horizontalConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|[dimmingView]|"
                                                                                         options:0
                                                                                         metrics:nil
                                                                                           views:NSDictionaryOfVariableBindings(dimmingView)];
     
-    NSArray *verticalConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[dimmingView]-0-|"
+    NSArray *verticalConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|[dimmingView]|"
                                                                              options:0
                                                                              metrics:nil
                                                                                views:NSDictionaryOfVariableBindings(dimmingView)];

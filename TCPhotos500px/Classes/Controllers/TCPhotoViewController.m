@@ -91,20 +91,11 @@
         
         // Automatically forwards message to the presenting view controller (parent)
         // to dismiss this presented view controller (child).
-        [self dismissViewControllerAnimated:NO completion:NULL];
+        [self dismissViewControllerAnimated:YES completion:NULL];
     }
 }
 
-#pragma mark - Photo Model
-
-- (void)setPhoto:(TCPhoto *)newPhoto
-{
-    if (_photo != newPhoto) {
-        _photo = newPhoto;
-        
-//        [self configureView];
-    }
-}
+#pragma mark - Configure View with Photo Model
 
 // Updates the view with the photo model's data.
 - (void)configureView
@@ -186,7 +177,7 @@ static CGFloat const kViewToWindowPadding = 60.0f;
     
     NSLog(@"Window Size = %@", NSStringFromCGSize(windowSize));
     NSLog(@"Photo Size = %@", NSStringFromCGSize(self.photoSize));
-        
+    
     // Include a padding space, so that scaled view will not be too close to
     // the window's edge.
     CGSize photoWithPaddingSize = CGSizeMake(self.photoSize.width + kViewToWindowPadding,

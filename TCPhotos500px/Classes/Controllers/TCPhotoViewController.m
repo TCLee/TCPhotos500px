@@ -8,6 +8,7 @@
 
 #import "TCPhotoViewController.h"
 #import "TCPhoto.h"
+#import "TCDimmingView.h"
 
 #import "UIImageView+WebCache.h"
 #import "MBProgressHUD.h"
@@ -20,7 +21,15 @@
 @property (nonatomic, weak) IBOutlet UILabel *titleLabel;
 @property (nonatomic, weak) IBOutlet UILabel *fullNameLabel;
 
-// The size of the actual photo to display on the image view.
+@property (nonatomic, strong, readonly) UITapGestureRecognizer *tapToDismissGestureRecognizer;
+@property (nonatomic, strong, readonly) TCDimmingView *dimView;
+
+// Window -> Root View Controller -> View
+@property (nonatomic, weak) UIView *rootView;
+
+@property (nonatomic, strong) TCPhoto *photo;
+
+// The size of the photo to display on the image view.
 @property (nonatomic, assign) CGSize photoSize;
 
 @end
@@ -29,76 +38,110 @@
 
 @implementation TCPhotoViewController
 
-#pragma mark - View Life Cycle
+@synthesize dimView = _dimView;
+@synthesize tapToDismissGestureRecognizer = _tapToDismissGestureRecognizer;
 
-- (void)viewWillAppear:(BOOL)animated
+#pragma mark - Lazy Properties
+
+- (TCDimmingView *)dimView
 {
-    [super viewWillAppear:animated];
+    if (!_dimView) {
+        _dimView = [[TCDimmingView alloc] init];
+    }
+    return _dimView;
+}
+
+- (UITapGestureRecognizer *)tapToDismissGestureRecognizer
+{
+    if (!_tapToDismissGestureRecognizer) {
+        _tapToDismissGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapToDismiss:)];
+        _tapToDismissGestureRecognizer.numberOfTapsRequired = 1;
         
-    // Remove rounded corner from the modal view.
-    self.view.layer.cornerRadius = 0.0f;
+        // So the user can still interact with controls in the modal view.
+        _tapToDismissGestureRecognizer.cancelsTouchesInView = NO;
+    }
+    return _tapToDismissGestureRecognizer;
 }
 
-- (void)viewDidAppear:(BOOL)animated
+#pragma mark - Present and Dismiss View Controller
+
+- (void)presentWithRootViewController:(UIViewController *)rootViewController photo:(TCPhoto *)photo animated:(BOOL)animated;
 {
-    [super viewDidAppear:animated];
+    // The root view will have the correct transform applied to it by the root view controller.
+    // We will use the same transform for this view, so that our orientation is correct.
+    self.rootView = rootViewController.view;
     
-    // Set the initial size of the modal view.
-    // The bounds of the modal's superview determines the size of our content view
-    // presented on the screen. Also set it in viewDidAppear, otherwise it will not take effect.
-    // Reference: http://stackoverflow.com/a/4271364
-    self.view.superview.bounds = CGRectMake(0.0f, 0.0f, 500.0f, 500.0f);
+    self.photo = photo;
     
-    // Add tap gesture recognizer in viewDidAppear because our view is now added
-    // to the window.
-    [self addTapToDismissGesture];
+    UIWindow *window = self.rootView.window;
     
-    // Load the image asynchronously and display it on this view.
-    [self configureView];
+    // Add the views as subviews of UIWindow.
+    [self addModalViewsToWindow:window];
+    
+    // Add gesture recognizer to window instead of the view to detect taps outside
+    // the modal view.
+    [window addGestureRecognizer:self.tapToDismissGestureRecognizer];
+    
+    // Load the photo asynchronously and display it on the view.
+    [self displayPhoto];
 }
 
-#pragma mark - View Rotation
+- (void)dismissAnimated:(BOOL)animated
+{
+    [self.view removeFromSuperview];
+    [self.dimView removeFromSuperviewAnimated:animated];
+}
+
+#pragma mark - View Rotation Events
+
+// When the root view controller's view runs its rotation animation, we will also
+// match its rotation animation for a smoother transition.
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+    [UIView animateWithDuration:duration animations:^{
+        self.view.transform = self.rootView.transform;
+    }];
+}
 
 // When the view is rotated, we also have to make changes to our view's bounds.
 // Otherwise, the photo will be clipped at the screen edges.
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
-{
-    [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
-        
+{    
     [self sizeViewToAspectFitPhotoAnimated:YES];
+}
+
+#pragma mark - Add Modal Views to UIWindow
+
+- (void)addModalViewsToWindow:(UIWindow *)window
+{
+    // Add the dimming view to the window, so that it covers every other view below it.
+    // This will also give us the modal effect by disabling all the views below the dimming view.
+    [self.dimView addToSuperview:window animated:YES];
+    
+    // In this case, we want to explicitly set the frame and not use auto layout
+    // constraints. This is because our view size is determined by the photo size.
+    self.view.center = self.rootView.center;
+    self.view.transform = self.rootView.transform;
+    self.view.bounds = CGRectMake(0, 0, 400.0f, 400.0f);
+    
+    // Add the photo view to the window and on top of the dimming view.
+    [window addSubview:self.view];
 }
 
 #pragma mark - Dismiss Modal View on Tap Gesture
 
-// StackOverflow: Tap to Dismiss http://stackoverflow.com/a/6180584
-- (void)addTapToDismissGesture
-{
-    UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapToDismiss:)];
-    tapGestureRecognizer.numberOfTapsRequired = 1;
-    
-    // So the user can still interact with controls in the modal view.
-    tapGestureRecognizer.cancelsTouchesInView = NO;
-    
-    // Add gesture recognizer to window instead of the view to detect taps outside
-    // the modal view.
-    [self.view.window addGestureRecognizer:tapGestureRecognizer];
-}
-
+// StackOverflow - Tap to Dismiss: http://stackoverflow.com/a/6180584
 - (void)handleTapToDismiss:(UITapGestureRecognizer *)sender
 {
     if (UIGestureRecognizerStateRecognized == sender.state) {
         [self.view.window removeGestureRecognizer:sender];
-        
-        // Automatically forwards message to the presenting view controller (parent)
-        // to dismiss this presented view controller (child).
-        [self dismissViewControllerAnimated:YES completion:NULL];
+        [self dismissAnimated:YES];
     }
 }
 
-#pragma mark - Configure View with Photo Model
+#pragma mark - Display Photo on View
 
-// Updates the view with the photo model's data.
-- (void)configureView
+- (void)displayPhoto
 {
     // Get the thumbnail from the memory (if available) or disk cache.
     // We'll display the low resolution thumbnail while we load the larger size
@@ -155,10 +198,10 @@
     // Animate the bounds changing, if animation is wanted.
     if (animated) {
         [UIView animateWithDuration:0.6f animations:^{
-            self.view.superview.bounds = viewBounds;
+            self.view.bounds = viewBounds;
         }];
     } else {
-        self.view.superview.bounds = viewBounds;
+        self.view.bounds = viewBounds;
     }
 }
 
@@ -191,5 +234,7 @@ static CGFloat const kViewToWindowPadding = 60.0f;
     
     return scaleFactor;
 }
+
+#pragma mark - Auto Layout Constraints
 
 @end

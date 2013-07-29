@@ -10,8 +10,19 @@
 
 @class TCPhoto;
 
+/*
+ Manages a view that displays a large size version of the photo.
+ */
 @interface TCPhotoViewController : UIViewController
 
-@property (nonatomic, strong) TCPhoto *photo;
+/*
+ Presents this view controller with optional animation.
+ */
+- (void)presentWithRootViewController:(UIViewController *)rootViewController photo:(TCPhoto *)photo animated:(BOOL)animated;
+
+/*
+ Dismisses this view controller with optional animation.
+ */
+- (void)dismissAnimated:(BOOL)animated;
 
 @end

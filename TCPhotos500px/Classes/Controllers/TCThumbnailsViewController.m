@@ -19,14 +19,13 @@ static NSString * const kSegueIdentifierPhotoView = @"showPhoto";
 
 @interface TCThumbnailsViewController ()
 
-//@property (nonatomic, weak) IBOutlet UICollectionView *collectionView;
 @property (nonatomic, weak) IBOutlet UISegmentedControl *featureSegmentedControl;
 @property (nonatomic, weak) IBOutlet UIBarButtonItem *categoryBarButtonItem;
 
 // Show a popover for the list of categories to filter the photo stream.
 @property (nonatomic, weak) UIPopoverController *categoryListPopoverController;
 
-@property (nonatomic, strong, readonly) TCDimmingView *dimView;
+@property (nonatomic, strong, readonly) TCPhotoViewController *photoViewController;
 
 // Photo Stream model that is presented on the collection view.
 @property (nonatomic, strong) TCPhotoStream *photoStream;
@@ -43,17 +42,18 @@ static NSString * const kSegueIdentifierPhotoView = @"showPhoto";
 
 @implementation TCThumbnailsViewController
 
-@synthesize dimView = _dimView;
+@synthesize photoViewController = _photoViewController;
 @synthesize photoStreamFeatures = _photoStreamFeatures;
 
 #pragma mark - Lazy Properties
 
-- (TCDimmingView *)dimView
+- (TCPhotoViewController *)photoViewController
 {
-    if (!_dimView) {
-        _dimView = [[TCDimmingView alloc] initWithDelegate:self];
+    if (!_photoViewController) {
+        // We use the class name as the Storyboard Identifier.
+        _photoViewController = [self.storyboard instantiateViewControllerWithIdentifier:NSStringFromClass([TCPhotoViewController class])];
     }
-    return _dimView;
+    return _photoViewController;
 }
 
 - (NSArray *)photoStreamFeatures
@@ -93,6 +93,21 @@ static NSString * const kSegueIdentifierPhotoView = @"showPhoto";
     // SVPullToRefreshView will be nil until after we call addPullToRefreshWithActionHandler:
     self.collectionView.pullToRefreshView.textColor = [UIColor whiteColor];
     self.collectionView.pullToRefreshView.arrowColor = [UIColor whiteColor];
+}
+
+#pragma mark - View Rotation Events
+
+// We need to manually forward the view rotation events to TCPhotoViewController
+// because it is not attached to the root view controller.
+
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+    [self.photoViewController willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    [self.photoViewController didRotateFromInterfaceOrientation:fromInterfaceOrientation];
 }
 
 #pragma mark - Memory Management
@@ -167,20 +182,13 @@ static NSString * const kSegueIdentifierPhotoView = @"showPhoto";
 
 #pragma mark - UICollectionView Delegate
 
+// User selected a thumbnail. Show the large size photo.
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-//    TCPhotoCell *photoCell = (TCPhotoCell *)[collectionView cellForItemAtIndexPath:indexPath];
-
-    // Add the dimming view to the window, so that it covers every other view below it.
-    [self.dimView addToSuperview:self.view.window animated:YES];
-}
-
-#pragma mark - TCDimmingView Delegate
-
-// Dismiss the modal views when a tap gesture is recognized.
-- (void)dimmingViewDidReceiveTapGesture:(TCDimmingView *)dimmingView
-{
-    [dimmingView removeFromSuperviewAnimated:YES];
+    TCPhotoCell *photoCell = (TCPhotoCell *)[collectionView cellForItemAtIndexPath:indexPath];    
+    [self.photoViewController presentWithRootViewController:self.view.window.rootViewController
+                                                      photo:photoCell.photo
+                                                   animated:YES];    
 }
 
 #pragma mark - TCCategoryListViewController Delegate
@@ -229,8 +237,8 @@ static NSString * const kSegueIdentifierPhotoView = @"showPhoto";
         categoryListViewController.delegate = self;
         
     } else if ([[segue identifier] isEqualToString:kSegueIdentifierPhotoView]) {
-        TCPhotoViewController *photoViewController = [segue destinationViewController];
-        [photoViewController setPhoto:[(TCPhotoCell *)sender photo]];
+//        TCPhotoViewController *photoViewController = [segue destinationViewController];
+//        [photoViewController setPhoto:[(TCPhotoCell *)sender photo]];
     }
 }
 

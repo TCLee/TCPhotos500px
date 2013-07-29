@@ -14,6 +14,15 @@ static NSTimeInterval const kAnimationDuration = 0.5f;
 
 #pragma mark - UIView Methods Override
 
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        [self configureView];
+    }
+    return self;
+}
+
 - (id)initWithDelegate:(id<TCDimmingViewDelegate>)delegate
 {
     self = [super init];

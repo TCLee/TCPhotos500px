@@ -95,43 +95,6 @@
             </objects>
             <point key="canvasLocation" x="617" y="2497"/>
         </scene>
-        <!--View Controller - TCBasicViewController-->
-        <scene sceneID="YcG-1F-SwY">
-            <objects>
-                <viewController storyboardIdentifier="TCBasicViewController" title="TCBasicViewController" wantsFullScreenLayout="YES" id="Rt9-u9-iiV" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="rey-by-Uxg">
-                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="072-7q-PIt">
-                                <subviews>
-                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="TCLee" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="u7p-ft-oU0">
-                                        <fontDescription key="fontDescription" type="system" pointSize="40"/>
-                                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                </subviews>
-                                <color key="backgroundColor" red="1" green="0.45098039220000002" blue="0.043137254899999998" alpha="1" colorSpace="calibratedRGB"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="512" type="user" id="4UD-uY-i4w"/>
-                                    <constraint firstItem="u7p-ft-oU0" firstAttribute="centerX" secondItem="072-7q-PIt" secondAttribute="centerX" type="default" id="EWa-Zi-jnR"/>
-                                    <constraint firstItem="u7p-ft-oU0" firstAttribute="centerY" secondItem="072-7q-PIt" secondAttribute="centerY" type="default" id="him-Qo-Lsb"/>
-                                    <constraint firstAttribute="width" constant="512" type="user" id="xFk-z6-2Gg"/>
-                                </constraints>
-                            </view>
-                        </subviews>
-                        <color key="backgroundColor" red="0.2259891319" green="0.50671635839999996" blue="0.16972982910000001" alpha="1" colorSpace="calibratedRGB"/>
-                        <constraints>
-                            <constraint firstItem="072-7q-PIt" firstAttribute="centerY" secondItem="rey-by-Uxg" secondAttribute="centerY" type="user" id="m8S-lf-Suf"/>
-                            <constraint firstAttribute="centerX" secondItem="072-7q-PIt" secondAttribute="centerX" type="user" id="qi3-6p-tYQ"/>
-                        </constraints>
-                    </view>
-                    <nil key="simulatedStatusBarMetrics"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="TvI-fS-3Cl" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-932" y="3245"/>
-        </scene>
         <!--Photo Modal View Controller-->
         <scene sceneID="TKv-Tf-y3z">
             <objects>
@@ -341,15 +304,6 @@
         </class>
         <class className="TCPhotoModalViewController" superclassName="UIViewController">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/TCPhotoModalViewController.h"/>
-            <relationships>
-                <relationship kind="outlet" name="dimView" candidateClass="UIView"/>
-                <relationship kind="outlet" name="heightLayoutConstraint" candidateClass="NSLayoutConstraint"/>
-                <relationship kind="outlet" name="imageView" candidateClass="UIImageView"/>
-                <relationship kind="outlet" name="modalView" candidateClass="UIView"/>
-                <relationship kind="outlet" name="photoTitleLabel" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="userFullNameLabel" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="widthLayoutConstraint" candidateClass="NSLayoutConstraint"/>
-            </relationships>
         </class>
         <class className="TCPhotoViewController" superclassName="UIViewController">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/TCPhotoViewController.h"/>

@@ -11,11 +11,12 @@
 
 #import "MBProgressHUD.h"
 
+#import <QuartzCore/QuartzCore.h>
+
 @interface TCPhotoModalViewController ()
 
 @property (weak, nonatomic) IBOutlet UIView *dimView;
 @property (weak, nonatomic) IBOutlet UIView *modalView;
-
 
 @property (weak, nonatomic) IBOutlet UIImageView *imageView;
 @property (weak, nonatomic) IBOutlet UILabel *photoTitleLabel;
@@ -62,15 +63,26 @@
 // match its rotation animation for a smoother transition.
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
-//    [UIView animateWithDuration:duration animations:^{
-//        self.modalView.transform = self.rootView.transform;
-//    }];
+    // Do not rotate if view has yet been added to a UIWindow (i.e. not visible).
+    if (!self.view.window) {
+        return;
+    }
+    
+    [UIView animateWithDuration:duration animations:^{
+        self.view.transform = self.rootView.transform;
+        self.view.frame = self.rootView.frame;
+    }];
 }
 
 // When the view is rotated, we also have to make changes to our view's bounds.
 // Otherwise, the photo will be clipped at the screen edges.
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
+    // Do not rotate if view has yet been added to a UIWindow (i.e. not visible).
+    if (!self.view.window) {
+        return;
+    }
+    
     [self sizeViewToAspectFitPhotoAnimated:YES];
 }
 
@@ -85,7 +97,7 @@
 #pragma mark - Present and Dismiss Modal View Controller
 
 - (void)presentViewWithWindow:(UIWindow *)window photo:(TCPhoto *)photo animated:(BOOL)animated
-{
+{    
     self.photo = photo;
     
     // The root view will have the correct transform applied to it by the root view controller.
@@ -94,10 +106,13 @@
     
     // Allow user to tap to dismiss modal view.
     [self.view addGestureRecognizer:self.tapToDismissGestureRecognizer];
-    
+        
     // Add our view as a subview of UIWindow so that it will be above all the other views.
+    self.view.transform = self.rootView.transform;
     [window addSubview:self.view];
-//    self.modalView.transform = self.rootView.transform;
+    
+    // We re-use the same view for all photos, so we need to reset its contents.
+    [self resetContents];
     
     if (animated) {
         self.view.alpha = 0.0f;
@@ -136,6 +151,16 @@
 }
 
 #pragma mark - Display Photo on View
+
+// Reset the view's contents for each photo to display.
+// We need to reset contents because we reuse the same view.
+- (void)resetContents
+{
+    [self setLayoutConstraintsWithSize:CGSizeMake(500.0f, 500.0f)];    
+    self.imageView.image = nil;
+    self.photoTitleLabel.text = @"";
+    self.userFullNameLabel.text = @"";
+}
 
 - (void)displayPhoto
 {
@@ -187,25 +212,26 @@
     // Create the view's new bounds from the scaled size.
     CGSize scaledPhotoSize = CGSizeMake(floorf(self.photoSize.width * scaleFactor),
                                         floorf(self.photoSize.height * scaleFactor));
-//    CGRect viewBounds = CGRectMake(0, 0, viewSize.width, viewSize.height);
     
-    NSLog(@"Scaled Photo Size = %@", NSStringFromCGSize(scaledPhotoSize));
+//    NSLog(@"Scaled Photo Size = %@", NSStringFromCGSize(scaledPhotoSize));
     
     // Animate the layout constraints changing, if animation is wanted.
     if (animated) {
-        self.widthLayoutConstraint.constant = scaledPhotoSize.width;
-        self.heightLayoutConstraint.constant = scaledPhotoSize.height;
+        [self setLayoutConstraintsWithSize:scaledPhotoSize];
         [self.view setNeedsUpdateConstraints];
         
         [UIView animateWithDuration:0.5f animations:^{
-//            self.view.bounds = viewBounds;
             [self.view layoutIfNeeded];
         }];
     } else {
-//        self.view.bounds = viewBounds;
-        self.widthLayoutConstraint.constant = scaledPhotoSize.width;
-        self.heightLayoutConstraint.constant = scaledPhotoSize.height;
+        [self setLayoutConstraintsWithSize:scaledPhotoSize];
     }
+}
+
+- (void)setLayoutConstraintsWithSize:(CGSize)size
+{
+    self.widthLayoutConstraint.constant = size.width;
+    self.heightLayoutConstraint.constant = size.height;
 }
 
 // The padding from the view's edge to the window's edge.
@@ -221,8 +247,8 @@ static CGFloat const kViewToWindowPadding = 60.0f;
     // device orientation (portrait or landscape).
     CGSize windowSize = self.rootView.bounds.size;
     
-    NSLog(@"Window Size = %@", NSStringFromCGSize(windowSize));
-    NSLog(@"Photo Size = %@", NSStringFromCGSize(self.photoSize));
+//    NSLog(@"Window Size = %@", NSStringFromCGSize(windowSize));
+//    NSLog(@"Photo Size = %@", NSStringFromCGSize(self.photoSize));
     
     // Include a padding space, so that scaled view will not be too close to
     // the window's edge.

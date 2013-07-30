@@ -1,55 +1,48 @@
 //
-//  TCPhotoViewController.m
+//  TCPhotoModalViewController.m
 //  TCPhotos500px
 //
-//  Created by Lee Tze Cheun on 7/22/13.
+//  Created by Lee Tze Cheun on 7/29/13.
 //  Copyright (c) 2013 Lee Tze Cheun. All rights reserved.
 //
 
-#import "TCPhotoViewController.h"
+#import "TCPhotoModalViewController.h"
 #import "TCPhoto.h"
-#import "TCDimmingView.h"
 
-#import "UIImageView+WebCache.h"
 #import "MBProgressHUD.h"
 
-#import <QuartzCore/QuartzCore.h>
+@interface TCPhotoModalViewController ()
 
-@interface TCPhotoViewController ()
+@property (weak, nonatomic) IBOutlet UIView *dimView;
+@property (weak, nonatomic) IBOutlet UIView *modalView;
 
-@property (nonatomic, weak) IBOutlet UIImageView *imageView;
-@property (nonatomic, weak) IBOutlet UILabel *titleLabel;
-@property (nonatomic, weak) IBOutlet UILabel *fullNameLabel;
+
+@property (weak, nonatomic) IBOutlet UIImageView *imageView;
+@property (weak, nonatomic) IBOutlet UILabel *photoTitleLabel;
+@property (weak, nonatomic) IBOutlet UILabel *userFullNameLabel;
+
+// Width and Height layout constraints will be adjusted dynamically to best aspect
+// fit the photo.
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *widthLayoutConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *heightLayoutConstraint;
 
 @property (nonatomic, strong, readonly) UITapGestureRecognizer *tapToDismissGestureRecognizer;
-@property (nonatomic, strong, readonly) TCDimmingView *dimView;
 
 // Window -> Root View Controller -> View
 @property (nonatomic, weak) UIView *rootView;
 
 @property (nonatomic, strong) TCPhoto *photo;
 
-// The size of the photo to display on the image view.
+// The size of the photo to display on the UIImageView.
 @property (nonatomic, assign) CGSize photoSize;
 
 @end
 
-#pragma mark -
+@implementation TCPhotoModalViewController
 
-@implementation TCPhotoViewController
-
-@synthesize dimView = _dimView;
 @synthesize tapToDismissGestureRecognizer = _tapToDismissGestureRecognizer;
 
 #pragma mark - Lazy Properties
-
-- (TCDimmingView *)dimView
-{
-    if (!_dimView) {
-        _dimView = [[TCDimmingView alloc] init];
-    }
-    return _dimView;
-}
 
 - (UITapGestureRecognizer *)tapToDismissGestureRecognizer
 {
@@ -63,24 +56,55 @@
     return _tapToDismissGestureRecognizer;
 }
 
-#pragma mark - Present and Dismiss View Controller
+#pragma mark - View Rotation Events
 
-- (void)presentWithRootViewController:(UIViewController *)rootViewController photo:(TCPhoto *)photo animated:(BOOL)animated;
+// When the root view controller's view runs its rotation animation, we will also
+// match its rotation animation for a smoother transition.
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
-    // The root view will have the correct transform applied to it by the root view controller.
-    // We will use the same transform for this view, so that our orientation is correct.
-    self.rootView = rootViewController.view;
-    
+//    [UIView animateWithDuration:duration animations:^{
+//        self.modalView.transform = self.rootView.transform;
+//    }];
+}
+
+// When the view is rotated, we also have to make changes to our view's bounds.
+// Otherwise, the photo will be clipped at the screen edges.
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    [self sizeViewToAspectFitPhotoAnimated:YES];
+}
+
+#pragma mark - Memory Management
+
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+#pragma mark - Present and Dismiss Modal View Controller
+
+- (void)presentViewWithWindow:(UIWindow *)window photo:(TCPhoto *)photo animated:(BOOL)animated
+{
     self.photo = photo;
     
-    UIWindow *window = self.rootView.window;
+    // The root view will have the correct transform applied to it by the root view controller.
+    // We will use the same transform for the modal view, so that its orientation is correct.
+    self.rootView = window.rootViewController.view;
     
-    // Add the views as subviews of UIWindow.
-    [self addModalViewsToWindow:window];
+    // Allow user to tap to dismiss modal view.
+    [self.view addGestureRecognizer:self.tapToDismissGestureRecognizer];
     
-    // Add gesture recognizer to window instead of the view to detect taps outside
-    // the modal view.
-    [window addGestureRecognizer:self.tapToDismissGestureRecognizer];
+    // Add our view as a subview of UIWindow so that it will be above all the other views.
+    [window addSubview:self.view];
+//    self.modalView.transform = self.rootView.transform;
+    
+    if (animated) {
+        self.view.alpha = 0.0f;
+        [UIView animateWithDuration:0.5f animations:^{
+            self.view.alpha = 1.0f;
+        }];
+    }
     
     // Load the photo asynchronously and display it on the view.
     [self displayPhoto];
@@ -88,44 +112,16 @@
 
 - (void)dismissAnimated:(BOOL)animated
 {
-    [self.view removeFromSuperview];
-    [self.dimView removeFromSuperviewAnimated:animated];
-}
-
-#pragma mark - View Rotation Events
-
-// When the root view controller's view runs its rotation animation, we will also
-// match its rotation animation for a smoother transition.
-- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
-{
-    [UIView animateWithDuration:duration animations:^{
-        self.view.transform = self.rootView.transform;
-    }];
-}
-
-// When the view is rotated, we also have to make changes to our view's bounds.
-// Otherwise, the photo will be clipped at the screen edges.
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
-{    
-    [self sizeViewToAspectFitPhotoAnimated:YES];
-}
-
-#pragma mark - Add Modal Views to UIWindow
-
-- (void)addModalViewsToWindow:(UIWindow *)window
-{
-    // Add the dimming view to the window, so that it covers every other view below it.
-    // This will also give us the modal effect by disabling all the views below the dimming view.
-    [self.dimView addToSuperview:window animated:YES];
-    
-    // In this case, we want to explicitly set the frame and not use auto layout
-    // constraints. This is because our view size is determined by the photo size.
-    self.view.center = self.rootView.center;
-    self.view.transform = self.rootView.transform;
-    self.view.bounds = CGRectMake(0, 0, 400.0f, 400.0f);
-    
-    // Add the photo view to the window and on top of the dimming view.
-    [window addSubview:self.view];
+    if (animated) {
+        self.view.alpha = 1.0f;
+        [UIView animateWithDuration:0.5f animations:^{
+            self.view.alpha = 0.0f;
+        } completion:^(BOOL finished) {
+            [self.view removeFromSuperview];
+        }];
+    } else {
+        [self.view removeFromSuperview];    
+    }
 }
 
 #pragma mark - Dismiss Modal View on Tap Gesture
@@ -134,7 +130,7 @@
 - (void)handleTapToDismiss:(UITapGestureRecognizer *)sender
 {
     if (UIGestureRecognizerStateRecognized == sender.state) {
-        [self.view.window removeGestureRecognizer:sender];
+        [self.view removeGestureRecognizer:sender];
         [self dismissAnimated:YES];
     }
 }
@@ -169,8 +165,8 @@
         }];
     }
     
-    self.titleLabel.text = self.photo.title;
-    self.fullNameLabel.text = self.photo.userFullName;
+    self.photoTitleLabel.text = self.photo.title;
+    self.userFullNameLabel.text = self.photo.userFullName;
 }
 
 #pragma mark - Resize View to Aspect Fit Photo
@@ -189,19 +185,26 @@
     CGFloat scaleFactor = [self scaleFactorForViewToAspectFitPhoto];
     
     // Create the view's new bounds from the scaled size.
-    CGSize viewSize = CGSizeMake(floorf(self.photoSize.width * scaleFactor),
-                                 floorf(self.photoSize.height * scaleFactor));
-    CGRect viewBounds = CGRectMake(0, 0, viewSize.width, viewSize.height);
+    CGSize scaledPhotoSize = CGSizeMake(floorf(self.photoSize.width * scaleFactor),
+                                        floorf(self.photoSize.height * scaleFactor));
+//    CGRect viewBounds = CGRectMake(0, 0, viewSize.width, viewSize.height);
     
-    NSLog(@"View Size = %@", NSStringFromCGSize(viewSize));
+    NSLog(@"Scaled Photo Size = %@", NSStringFromCGSize(scaledPhotoSize));
     
-    // Animate the bounds changing, if animation is wanted.
+    // Animate the layout constraints changing, if animation is wanted.
     if (animated) {
-        [UIView animateWithDuration:0.6f animations:^{
-            self.view.bounds = viewBounds;
+        self.widthLayoutConstraint.constant = scaledPhotoSize.width;
+        self.heightLayoutConstraint.constant = scaledPhotoSize.height;
+        [self.view setNeedsUpdateConstraints];
+        
+        [UIView animateWithDuration:0.5f animations:^{
+//            self.view.bounds = viewBounds;
+            [self.view layoutIfNeeded];
         }];
     } else {
-        self.view.bounds = viewBounds;
+//        self.view.bounds = viewBounds;
+        self.widthLayoutConstraint.constant = scaledPhotoSize.width;
+        self.heightLayoutConstraint.constant = scaledPhotoSize.height;
     }
 }
 
@@ -216,7 +219,7 @@ static CGFloat const kViewToWindowPadding = 60.0f;
 {
     // Use the root view's bounds so that it takes into account the
     // device orientation (portrait or landscape).
-    CGSize windowSize = self.view.window.rootViewController.view.bounds.size;
+    CGSize windowSize = self.rootView.bounds.size;
     
     NSLog(@"Window Size = %@", NSStringFromCGSize(windowSize));
     NSLog(@"Photo Size = %@", NSStringFromCGSize(self.photoSize));
@@ -224,8 +227,8 @@ static CGFloat const kViewToWindowPadding = 60.0f;
     // Include a padding space, so that scaled view will not be too close to
     // the window's edge.
     CGSize photoWithPaddingSize = CGSizeMake(self.photoSize.width + kViewToWindowPadding,
-                                            self.photoSize.height + kViewToWindowPadding);
-    CGFloat scaleFactor = 1.0f;    
+                                             self.photoSize.height + kViewToWindowPadding);
+    CGFloat scaleFactor = 1.0f;
     if (photoWithPaddingSize.width > windowSize.width) {
         scaleFactor = windowSize.width / photoWithPaddingSize.width;
     } else if (photoWithPaddingSize.height > windowSize.height) {

@@ -15,6 +15,7 @@
 		813BDDA917925B9F0076E1A2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 813BDDA817925B9F0076E1A2 /* main.m */; };
 		813BDDCC17929B9A0076E1A2 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 813BDDCB17929B9A0076E1A2 /* MobileCoreServices.framework */; };
 		813BDDCE17929B9F0076E1A2 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 813BDDCD17929B9F0076E1A2 /* SystemConfiguration.framework */; };
+		819DF5EF17A666400004A5B3 /* TCPhotoModalViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 819DF5EE17A666400004A5B3 /* TCPhotoModalViewController.m */; };
 		81DFAF59179D18180006371A /* TCAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 81DFAF40179D18180006371A /* TCAppDelegate.m */; };
 		81DFAF5A179D18180006371A /* TCCategoryListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 81DFAF43179D18180006371A /* TCCategoryListViewController.m */; };
 		81DFAF5B179D18180006371A /* TCThumbnailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 81DFAF45179D18180006371A /* TCThumbnailsViewController.m */; };
@@ -45,6 +46,8 @@
 		813BDDAA17925B9F0076E1A2 /* TCPhotos500px-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TCPhotos500px-Prefix.pch"; sourceTree = "<group>"; };
 		813BDDCB17929B9A0076E1A2 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		813BDDCD17929B9F0076E1A2 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		819DF5ED17A666400004A5B3 /* TCPhotoModalViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCPhotoModalViewController.h; sourceTree = "<group>"; };
+		819DF5EE17A666400004A5B3 /* TCPhotoModalViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCPhotoModalViewController.m; sourceTree = "<group>"; };
 		81DFAF3F179D18180006371A /* TCAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCAppDelegate.h; sourceTree = "<group>"; };
 		81DFAF40179D18180006371A /* TCAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCAppDelegate.m; sourceTree = "<group>"; };
 		81DFAF42179D18180006371A /* TCCategoryListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCCategoryListViewController.h; sourceTree = "<group>"; };
@@ -172,6 +175,8 @@
 				81DFAF45179D18180006371A /* TCThumbnailsViewController.m */,
 				81DFAF73179D452C0006371A /* TCPhotoViewController.h */,
 				81DFAF74179D452C0006371A /* TCPhotoViewController.m */,
+				819DF5ED17A666400004A5B3 /* TCPhotoModalViewController.h */,
+				819DF5EE17A666400004A5B3 /* TCPhotoModalViewController.m */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -360,6 +365,7 @@
 				81DFAF68179D1CA60006371A /* DescriptionBuilder.m in Sources */,
 				81DFAF75179D452C0006371A /* TCPhotoViewController.m in Sources */,
 				811F079C17A4BE9C00A8FBB3 /* TCDimmingView.m in Sources */,
+				819DF5EF17A666400004A5B3 /* TCPhotoModalViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

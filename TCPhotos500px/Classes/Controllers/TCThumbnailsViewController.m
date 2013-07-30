@@ -8,6 +8,7 @@
 
 #import "TCThumbnailsViewController.h"
 #import "TCPhotoViewController.h"
+#import "TCPhotoModalViewController.h"
 #import "TCPhotoCell.h"
 #import "TCPhotoStream.h"
 #import "TCPhotoStreamCategory.h"
@@ -27,6 +28,9 @@ static NSString * const kSegueIdentifierPhotoView = @"showPhoto";
 
 @property (nonatomic, strong, readonly) TCPhotoViewController *photoViewController;
 
+// Show the large size photo in an overlay modal view.
+@property (nonatomic, strong, readonly) TCPhotoModalViewController *photoModalViewController;
+
 // Photo Stream model that is presented on the collection view.
 @property (nonatomic, strong) TCPhotoStream *photoStream;
 
@@ -43,6 +47,7 @@ static NSString * const kSegueIdentifierPhotoView = @"showPhoto";
 @implementation TCThumbnailsViewController
 
 @synthesize photoViewController = _photoViewController;
+@synthesize photoModalViewController = _photoModalViewController;
 @synthesize photoStreamFeatures = _photoStreamFeatures;
 
 #pragma mark - Lazy Properties
@@ -56,6 +61,14 @@ static NSString * const kSegueIdentifierPhotoView = @"showPhoto";
     return _photoViewController;
 }
 
+- (TCPhotoModalViewController *)photoModalViewController
+{
+    if (!_photoModalViewController) {
+        _photoModalViewController = [self.storyboard instantiateViewControllerWithIdentifier:NSStringFromClass([TCPhotoModalViewController class])];
+    }
+    return _photoModalViewController;
+}
+
 - (NSArray *)photoStreamFeatures
 {
     if (!_photoStreamFeatures) {
@@ -67,7 +80,7 @@ static NSString * const kSegueIdentifierPhotoView = @"showPhoto";
     return _photoStreamFeatures;
 }
 
-#pragma mark - View Life Cycle
+#pragma mark - View Events
 
 - (void)viewDidLoad
 {
@@ -102,12 +115,12 @@ static NSString * const kSegueIdentifierPhotoView = @"showPhoto";
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
-    [self.photoViewController willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    [self.photoModalViewController willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
-    [self.photoViewController didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+    [self.photoModalViewController didRotateFromInterfaceOrientation:fromInterfaceOrientation];
 }
 
 #pragma mark - Memory Management
@@ -185,10 +198,14 @@ static NSString * const kSegueIdentifierPhotoView = @"showPhoto";
 // User selected a thumbnail. Show the large size photo.
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    TCPhotoCell *photoCell = (TCPhotoCell *)[collectionView cellForItemAtIndexPath:indexPath];    
-    [self.photoViewController presentWithRootViewController:self.view.window.rootViewController
-                                                      photo:photoCell.photo
-                                                   animated:YES];    
+    TCPhotoCell *photoCell = (TCPhotoCell *)[collectionView cellForItemAtIndexPath:indexPath];
+    [self.photoModalViewController presentViewWithWindow:self.view.window
+                                                   photo:photoCell.photo
+                                                animated:YES];
+    
+//    [self.photoViewController presentWithRootViewController:self.view.window.rootViewController
+//                                                      photo:photoCell.photo
+//                                                   animated:YES];    
 }
 
 #pragma mark - TCCategoryListViewController Delegate

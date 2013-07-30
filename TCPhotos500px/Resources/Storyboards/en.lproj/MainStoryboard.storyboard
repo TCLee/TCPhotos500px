@@ -46,7 +46,7 @@
         <scene sceneID="SHC-H5-HZz">
             <objects>
                 <viewController storyboardIdentifier="TCPhotoViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Tk3-k0-1I0" customClass="TCPhotoViewController" sceneMemberID="viewController">
-                    <view key="view" clipsSubviews="YES" contentMode="scaleToFill" id="Iap-Uh-8cJ">
+                    <view key="view" opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" id="Iap-Uh-8cJ">
                         <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
@@ -67,7 +67,6 @@
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
-                        <color key="backgroundColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstItem="7JT-u4-4V4" firstAttribute="top" secondItem="O7W-uh-78q" secondAttribute="top" type="user" id="1a2-Uy-lXO"/>
                             <constraint firstItem="GcR-Q5-h9z" firstAttribute="leading" secondItem="Iap-Uh-8cJ" secondAttribute="leading" type="user" id="ALH-un-slv"/>
@@ -95,6 +94,86 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="t2E-wb-pAd" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="617" y="2497"/>
+        </scene>
+        <!--Photo Modal View Controller-->
+        <scene sceneID="TKv-Tf-y3z">
+            <objects>
+                <viewController storyboardIdentifier="TCPhotoModalViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="8zi-nO-S7D" customClass="TCPhotoModalViewController" sceneMemberID="viewController">
+                    <view key="view" opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" id="2bm-86-HqX">
+                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <view opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" alpha="0.5" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="XFy-Ry-EWX">
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                            </view>
+                            <view clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mtH-co-xwH">
+                                <subviews>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" translatesAutoresizingMaskIntoConstraints="NO" id="QR0-Gb-r3S">
+                                        <color key="backgroundColor" red="0.2259891319" green="0.50671635839999996" blue="0.16972982910000001" alpha="1" colorSpace="calibratedRGB"/>
+                                    </imageView>
+                                    <view opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dU5-Ur-vgz">
+                                        <subviews>
+                                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Photo Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="U2L-70-VqJ">
+                                                <fontDescription key="fontDescription" type="system" pointSize="35"/>
+                                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="User's Full Name" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Aiq-Tx-mLe">
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                        </subviews>
+                                        <color key="backgroundColor" white="0.0" alpha="0.5" colorSpace="calibratedWhite"/>
+                                        <constraints>
+                                            <constraint firstItem="Aiq-Tx-mLe" firstAttribute="trailing" secondItem="dU5-Ur-vgz" secondAttribute="trailing" type="default" id="0AG-BX-sH0"/>
+                                            <constraint firstItem="Aiq-Tx-mLe" firstAttribute="leading" secondItem="dU5-Ur-vgz" secondAttribute="leading" type="default" id="aRH-dL-LmO"/>
+                                            <constraint firstItem="U2L-70-VqJ" firstAttribute="top" secondItem="dU5-Ur-vgz" secondAttribute="top" type="default" id="cHa-k3-uwD"/>
+                                            <constraint firstItem="U2L-70-VqJ" firstAttribute="trailing" secondItem="dU5-Ur-vgz" secondAttribute="trailing" type="default" id="oEG-2B-QP0"/>
+                                            <constraint firstItem="U2L-70-VqJ" firstAttribute="leading" secondItem="dU5-Ur-vgz" secondAttribute="leading" type="default" id="oaW-yp-7Ky"/>
+                                            <constraint firstItem="Aiq-Tx-mLe" firstAttribute="bottom" secondItem="dU5-Ur-vgz" secondAttribute="bottom" type="default" id="qnZ-7H-d9g"/>
+                                            <constraint firstItem="Aiq-Tx-mLe" firstAttribute="top" secondItem="U2L-70-VqJ" secondAttribute="bottom" constant="8" symbolic="YES" type="default" id="rcR-rt-Kxv"/>
+                                        </constraints>
+                                    </view>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstItem="QR0-Gb-r3S" firstAttribute="top" secondItem="mtH-co-xwH" secondAttribute="top" type="user" id="2m3-n2-cmw"/>
+                                    <constraint firstItem="QR0-Gb-r3S" firstAttribute="leading" secondItem="mtH-co-xwH" secondAttribute="leading" type="default" id="6KW-ry-Rwe"/>
+                                    <constraint firstItem="QR0-Gb-r3S" firstAttribute="trailing" secondItem="mtH-co-xwH" secondAttribute="trailing" type="default" id="EE4-2Y-lvs"/>
+                                    <constraint firstAttribute="width" constant="500" type="user" id="Ip9-fT-pU5"/>
+                                    <constraint firstAttribute="height" constant="500" type="user" id="Lpi-Ue-T8k"/>
+                                    <constraint firstItem="dU5-Ur-vgz" firstAttribute="leading" secondItem="mtH-co-xwH" secondAttribute="leading" type="user" id="eLP-H2-9mJ"/>
+                                    <constraint firstAttribute="bottom" secondItem="dU5-Ur-vgz" secondAttribute="bottom" type="user" id="kAb-ze-o1p"/>
+                                    <constraint firstItem="dU5-Ur-vgz" firstAttribute="trailing" secondItem="mtH-co-xwH" secondAttribute="trailing" type="user" id="o9o-2X-zOe"/>
+                                    <constraint firstItem="QR0-Gb-r3S" firstAttribute="bottom" secondItem="mtH-co-xwH" secondAttribute="bottom" type="user" id="qXy-FR-557"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="XFy-Ry-EWX" firstAttribute="leading" secondItem="2bm-86-HqX" secondAttribute="leading" type="default" id="RfV-AP-cbV"/>
+                            <constraint firstItem="XFy-Ry-EWX" firstAttribute="top" secondItem="2bm-86-HqX" secondAttribute="top" type="default" id="dAQ-yd-yUi"/>
+                            <constraint firstItem="XFy-Ry-EWX" firstAttribute="bottom" secondItem="2bm-86-HqX" secondAttribute="bottom" type="default" id="dpk-op-ZPV"/>
+                            <constraint firstItem="XFy-Ry-EWX" firstAttribute="trailing" secondItem="2bm-86-HqX" secondAttribute="trailing" type="default" id="r4p-f0-u0r"/>
+                            <constraint firstItem="mtH-co-xwH" firstAttribute="centerX" secondItem="XFy-Ry-EWX" secondAttribute="centerX" type="default" id="uck-qx-CUN"/>
+                            <constraint firstItem="mtH-co-xwH" firstAttribute="centerY" secondItem="XFy-Ry-EWX" secondAttribute="centerY" type="default" id="unb-uw-gwI"/>
+                        </constraints>
+                    </view>
+                    <nil key="simulatedStatusBarMetrics"/>
+                    <connections>
+                        <outlet property="dimView" destination="XFy-Ry-EWX" id="8FS-5H-tx6"/>
+                        <outlet property="heightLayoutConstraint" destination="Lpi-Ue-T8k" id="mrN-1G-LiD"/>
+                        <outlet property="imageView" destination="QR0-Gb-r3S" id="ZPN-ro-opS"/>
+                        <outlet property="modalView" destination="mtH-co-xwH" id="npt-CP-3PW"/>
+                        <outlet property="photoTitleLabel" destination="U2L-70-VqJ" id="Prq-zP-S56"/>
+                        <outlet property="userFullNameLabel" destination="Aiq-Tx-mLe" id="gWs-Gb-n8v"/>
+                        <outlet property="widthLayoutConstraint" destination="Ip9-fT-pU5" id="v8I-rT-MPg"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="jwg-bx-cCh" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="637" y="3815"/>
         </scene>
         <!--Thumbnails View Controller-->
         <scene sceneID="grM-Lb-8sx">
@@ -221,6 +300,18 @@
             <relationships>
                 <relationship kind="outlet" name="activityIndicator" candidateClass="UIActivityIndicatorView"/>
                 <relationship kind="outlet" name="imageView" candidateClass="UIImageView"/>
+            </relationships>
+        </class>
+        <class className="TCPhotoModalViewController" superclassName="UIViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/TCPhotoModalViewController.h"/>
+            <relationships>
+                <relationship kind="outlet" name="dimView" candidateClass="UIView"/>
+                <relationship kind="outlet" name="heightLayoutConstraint" candidateClass="NSLayoutConstraint"/>
+                <relationship kind="outlet" name="imageView" candidateClass="UIImageView"/>
+                <relationship kind="outlet" name="modalView" candidateClass="UIView"/>
+                <relationship kind="outlet" name="photoTitleLabel" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="userFullNameLabel" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="widthLayoutConstraint" candidateClass="NSLayoutConstraint"/>
             </relationships>
         </class>
         <class className="TCPhotoViewController" superclassName="UIViewController">

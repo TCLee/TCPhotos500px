@@ -110,22 +110,33 @@ static NSString * const kSegueIdentifierPhotoView = @"showPhoto";
 
 #pragma mark - View Rotation Events
 
-// We need to manually forward the view rotation events to TCPhotoViewController
-// because it is not attached to the root view controller.
+/*
+ We need to manually forward the view rotation events to TCPhotoModalViewController
+ because it is not attached/related to any view controllers (it's view is added to 
+ UIWindow). 
+ Remember to check if TCPhotoModalViewController's view has been added to a window 
+ before forwarding the rotation events.
+*/
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
-    [self.photoModalViewController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    if (self.photoModalViewController.view.window) {
+        [self.photoModalViewController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    }
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
-    [self.photoModalViewController willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    if (self.photoModalViewController.view.window) {
+        [self.photoModalViewController willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    }
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
-    [self.photoModalViewController didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+    if (self.photoModalViewController.view.window) {
+        [self.photoModalViewController didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+    }
 }
 
 #pragma mark - Memory Management

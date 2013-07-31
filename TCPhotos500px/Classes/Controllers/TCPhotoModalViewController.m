@@ -15,9 +15,6 @@
 
 @interface TCPhotoModalViewController ()
 
-@property (weak, nonatomic) IBOutlet UIView *dimView;
-@property (weak, nonatomic) IBOutlet UIView *modalView;
-
 @property (weak, nonatomic) IBOutlet UIImageView *imageView;
 @property (weak, nonatomic) IBOutlet UILabel *photoTitleLabel;
 @property (weak, nonatomic) IBOutlet UILabel *userFullNameLabel;
@@ -27,9 +24,11 @@
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *widthLayoutConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *heightLayoutConstraint;
 
+// Tap anywhere on the photo modal view to dismiss it.
 @property (nonatomic, strong, readonly) UITapGestureRecognizer *tapToDismissGestureRecognizer;
 
 // Window -> Root View Controller -> View
+// 
 @property (nonatomic, weak) UIView *rootView;
 
 @property (nonatomic, strong) TCPhoto *photo;
@@ -45,13 +44,14 @@
 
 #pragma mark - Lazy Properties
 
+// Tap to Dismiss Modal View - http://stackoverflow.com/a/6180584
 - (UITapGestureRecognizer *)tapToDismissGestureRecognizer
 {
     if (!_tapToDismissGestureRecognizer) {
         _tapToDismissGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapToDismiss:)];
         _tapToDismissGestureRecognizer.numberOfTapsRequired = 1;
         
-        // So the user can still interact with controls in the modal view.
+        // So the user can still interact with controls in the view.
         _tapToDismissGestureRecognizer.cancelsTouchesInView = NO;
     }
     return _tapToDismissGestureRecognizer;
@@ -63,35 +63,32 @@
 // match its rotation animation for a smoother transition.
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
-    // Do not rotate if view has yet been added to a UIWindow (i.e. not visible).
-    if (!self.view.window) {
-        return;
-    }
-    
     [UIView animateWithDuration:duration animations:^{
-        self.view.transform = self.rootView.transform;
-        self.view.frame = self.rootView.frame;
+        [self synchronizeWithRootView];        
     }];
-}
-
-// When the view is rotated, we also have to make changes to our view's bounds.
-// Otherwise, the photo will be clipped at the screen edges.
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
-{
-    // Do not rotate if view has yet been added to a UIWindow (i.e. not visible).
-    if (!self.view.window) {
-        return;
-    }
     
+    // TODO: Pass in a duration parameter to match rotation duration.
+    // Resize view to fit photo again as rotation changes the view's bounds.
     [self sizeViewToAspectFitPhotoAnimated:YES];
 }
 
-#pragma mark - Memory Management
+#pragma mark - Synchronize Transform, Bounds and Center with Root View
 
-- (void)didReceiveMemoryWarning
+/*
+ Rotate a UIView that is added to a UIWindow:
+ [Good] Modifies transform and frame - http://stackoverflow.com/a/4960988
+ [Better] Modifies transform and bounds/center - http://stackoverflow.com/a/14855914
+ */
+
+// We need to call this method to ensure that our view is always in sync with the
+// root view controller's view. This is because our view is added to a UIWindow.
+- (void)synchronizeWithRootView
 {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    self.view.transform = self.rootView.transform;
+    
+    // Transform invalidates the frame, so use bounds and center instead.
+    self.view.bounds = self.rootView.bounds;
+    self.view.center = self.rootView.center;
 }
 
 #pragma mark - Present and Dismiss Modal View Controller
@@ -103,17 +100,18 @@
     // The root view will have the correct transform applied to it by the root view controller.
     // We will use the same transform for the modal view, so that its orientation is correct.
     self.rootView = window.rootViewController.view;
+    [self synchronizeWithRootView];
     
-    // Allow user to tap to dismiss modal view.
-    [self.view addGestureRecognizer:self.tapToDismissGestureRecognizer];
-        
+    // Allow user to tap anywhere to dismiss the modal view.
+    [self.view addGestureRecognizer:self.tapToDismissGestureRecognizer];    
+    
     // Add our view as a subview of UIWindow so that it will be above all the other views.
-    self.view.transform = self.rootView.transform;
     [window addSubview:self.view];
     
     // We re-use the same view for all photos, so we need to reset its contents.
     [self resetContents];
     
+    // Perform a simple fade in animation, if requested.
     if (animated) {
         self.view.alpha = 0.0f;
         [UIView animateWithDuration:0.5f animations:^{
@@ -139,9 +137,6 @@
     }
 }
 
-#pragma mark - Dismiss Modal View on Tap Gesture
-
-// StackOverflow - Tap to Dismiss: http://stackoverflow.com/a/6180584
 - (void)handleTapToDismiss:(UITapGestureRecognizer *)sender
 {
     if (UIGestureRecognizerStateRecognized == sender.state) {
@@ -217,9 +212,8 @@
     
     // Animate the layout constraints changing, if animation is wanted.
     if (animated) {
+        // Animating NSLayoutConstraints - http://stackoverflow.com/a/12926646
         [self setLayoutConstraintsWithSize:scaledPhotoSize];
-        [self.view setNeedsUpdateConstraints];
-        
         [UIView animateWithDuration:0.5f animations:^{
             [self.view layoutIfNeeded];
         }];
@@ -228,10 +222,17 @@
     }
 }
 
+/*
+ Set the content view's width and height layout constraints to the given size.
+ */
 - (void)setLayoutConstraintsWithSize:(CGSize)size
 {
     self.widthLayoutConstraint.constant = size.width;
     self.heightLayoutConstraint.constant = size.height;
+   
+    // Let the view know that we have modified the constraints,
+    // so that it can update any dependent constraints.
+    [self.view setNeedsUpdateConstraints];
 }
 
 // The padding from the view's edge to the window's edge.

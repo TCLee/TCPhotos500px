@@ -15,14 +15,12 @@ PODS:
     - SDWebImage/MapKit
   - SDWebImage/MapKit (3.3):
     - libwebp
-  - SVProgressHUD (0.9)
   - SVPullToRefresh (0.4.1)
 
 DEPENDENCIES:
   - 500px-iOS-api (~> 1.0.3)
   - MBProgressHUD (~> 0.7)
   - SDWebImage (~> 3.3)
-  - SVProgressHUD (~> 0.9)
   - SVPullToRefresh (~> 0.4.1)
 
 SPEC CHECKSUMS:
@@ -30,7 +28,6 @@ SPEC CHECKSUMS:
   libwebp: 40517fa1fd3716eded73b4696c45fc0b66e4b414
   MBProgressHUD: 1fd8591a2216d5dec6de24e09187bb03bcbe9946
   SDWebImage: 79a8bac9ccf85b269100b294f7b43684dab8bf8a
-  SVProgressHUD: 03d4845ec8e64591726428a08236c6a5489d45f8
   SVPullToRefresh: 61a0e4bd12bd6f8e3465909810b0fbeb1a28d5f2
 
 COCOAPODS: 0.22.3

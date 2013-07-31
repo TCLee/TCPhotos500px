@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		811F079C17A4BE9C00A8FBB3 /* TCDimmingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 811F079B17A4BE9C00A8FBB3 /* TCDimmingView.m */; };
 		813BDD9D17925B9F0076E1A2 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 813BDD9C17925B9F0076E1A2 /* UIKit.framework */; };
 		813BDD9F17925B9F0076E1A2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 813BDD9E17925B9F0076E1A2 /* Foundation.framework */; };
 		813BDDA117925B9F0076E1A2 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 813BDDA017925B9F0076E1A2 /* CoreGraphics.framework */; };
@@ -28,14 +27,11 @@
 		81DFAF63179D18180006371A /* TCPhotoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 81DFAF58179D18180006371A /* TCPhotoCell.m */; };
 		81DFAF68179D1CA60006371A /* DescriptionBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 81DFAF67179D1CA60006371A /* DescriptionBuilder.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		81DFAF72179D1E7E0006371A /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81DFAF70179D1E7E0006371A /* MainStoryboard.storyboard */; };
-		81DFAF75179D452C0006371A /* TCPhotoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 81DFAF74179D452C0006371A /* TCPhotoViewController.m */; };
 		D716B54DF63E45988A0C8480 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A0CCE50FF24F4FCF9D9B234C /* libPods.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		7D4F4BA01244436B83C44033 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = SOURCE_ROOT; };
-		811F079A17A4BE9C00A8FBB3 /* TCDimmingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCDimmingView.h; sourceTree = "<group>"; };
-		811F079B17A4BE9C00A8FBB3 /* TCDimmingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCDimmingView.m; sourceTree = "<group>"; };
 		813BDD9917925B9F0076E1A2 /* TCPhotos500px.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TCPhotos500px.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		813BDD9C17925B9F0076E1A2 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		813BDD9E17925B9F0076E1A2 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -71,8 +67,6 @@
 		81DFAF66179D1CA60006371A /* DescriptionBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DescriptionBuilder.h; sourceTree = "<group>"; };
 		81DFAF67179D1CA60006371A /* DescriptionBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DescriptionBuilder.m; sourceTree = "<group>"; };
 		81DFAF71179D1E7E0006371A /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard.storyboard; sourceTree = "<group>"; };
-		81DFAF73179D452C0006371A /* TCPhotoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCPhotoViewController.h; sourceTree = "<group>"; };
-		81DFAF74179D452C0006371A /* TCPhotoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCPhotoViewController.m; sourceTree = "<group>"; };
 		A0CCE50FF24F4FCF9D9B234C /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -173,8 +167,6 @@
 				81DFAF43179D18180006371A /* TCCategoryListViewController.m */,
 				81DFAF44179D18180006371A /* TCThumbnailsViewController.h */,
 				81DFAF45179D18180006371A /* TCThumbnailsViewController.m */,
-				81DFAF73179D452C0006371A /* TCPhotoViewController.h */,
-				81DFAF74179D452C0006371A /* TCPhotoViewController.m */,
 				819DF5ED17A666400004A5B3 /* TCPhotoModalViewController.h */,
 				819DF5EE17A666400004A5B3 /* TCPhotoModalViewController.m */,
 			);
@@ -205,8 +197,6 @@
 				81DFAF56179D18180006371A /* TCCategoryCell.m */,
 				81DFAF57179D18180006371A /* TCPhotoCell.h */,
 				81DFAF58179D18180006371A /* TCPhotoCell.m */,
-				811F079A17A4BE9C00A8FBB3 /* TCDimmingView.h */,
-				811F079B17A4BE9C00A8FBB3 /* TCDimmingView.m */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -363,8 +353,6 @@
 				81DFAF62179D18180006371A /* TCCategoryCell.m in Sources */,
 				81DFAF63179D18180006371A /* TCPhotoCell.m in Sources */,
 				81DFAF68179D1CA60006371A /* DescriptionBuilder.m in Sources */,
-				81DFAF75179D452C0006371A /* TCPhotoViewController.m in Sources */,
-				811F079C17A4BE9C00A8FBB3 /* TCDimmingView.m in Sources */,
 				819DF5EF17A666400004A5B3 /* TCPhotoModalViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

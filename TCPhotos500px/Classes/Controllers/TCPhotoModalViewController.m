@@ -11,8 +11,6 @@
 
 #import "MBProgressHUD.h"
 
-#import <QuartzCore/QuartzCore.h>
-
 @interface TCPhotoModalViewController ()
 
 @property (weak, nonatomic) IBOutlet UIImageView *imageView;
@@ -28,15 +26,16 @@
 @property (nonatomic, strong, readonly) UITapGestureRecognizer *tapToDismissGestureRecognizer;
 
 // Window -> Root View Controller -> View
-// 
+// We will match our view's transform, bounds and center to the root view.
 @property (nonatomic, weak) UIView *rootView;
 
 @property (nonatomic, strong) TCPhoto *photo;
 
-// The size of the photo to display on the UIImageView.
-@property (nonatomic, assign) CGSize photoSize;
-
 @end
+
+// Constants for the animation duration.
+static NSTimeInterval const kFadeAnimationDuration = 0.5f;
+static NSTimeInterval const kResizeAnimationDuration = 0.5f;
 
 @implementation TCPhotoModalViewController
 
@@ -64,12 +63,14 @@
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
     [UIView animateWithDuration:duration animations:^{
-        [self synchronizeWithRootView];        
+        [self synchronizeWithRootView];
+        
+        // Resize view to aspect fit photo as rotation changes the view's bounds.
+        [self sizeToAspectFitPhotoAnimated:NO];
+        
+        // We need to re-layout the views, otherwise our views will be out of place.
+        [self.view layoutIfNeeded];
     }];
-    
-    // TODO: Pass in a duration parameter to match rotation duration.
-    // Resize view to fit photo again as rotation changes the view's bounds.
-    [self sizeViewToAspectFitPhotoAnimated:YES];
 }
 
 #pragma mark - Synchronize Transform, Bounds and Center with Root View
@@ -93,19 +94,20 @@
 
 #pragma mark - Present and Dismiss Modal View Controller
 
-- (void)presentViewWithWindow:(UIWindow *)window photo:(TCPhoto *)photo animated:(BOOL)animated
+- (void)presentWithWindow:(UIWindow *)window photo:(TCPhoto *)photo animated:(BOOL)animated
 {    
     self.photo = photo;
     
     // The root view will have the correct transform applied to it by the root view controller.
-    // We will use the same transform for the modal view, so that its orientation is correct.
+    // We will use the same transform for our view, so that its orientation is correct.
     self.rootView = window.rootViewController.view;
     [self synchronizeWithRootView];
     
     // Allow user to tap anywhere to dismiss the modal view.
     [self.view addGestureRecognizer:self.tapToDismissGestureRecognizer];    
     
-    // Add our view as a subview of UIWindow so that it will be above all the other views.
+    // Add our view as a subview of UIWindow so that it will be above all the
+    // other views.
     [window addSubview:self.view];
     
     // We re-use the same view for all photos, so we need to reset its contents.
@@ -114,7 +116,7 @@
     // Perform a simple fade in animation, if requested.
     if (animated) {
         self.view.alpha = 0.0f;
-        [UIView animateWithDuration:0.5f animations:^{
+        [UIView animateWithDuration:kFadeAnimationDuration animations:^{
             self.view.alpha = 1.0f;
         }];
     }
@@ -125,9 +127,10 @@
 
 - (void)dismissAnimated:(BOOL)animated
 {
+    // Perform a simple fade out animation before removing from superview, if animaton is requested.
     if (animated) {
         self.view.alpha = 1.0f;
-        [UIView animateWithDuration:0.5f animations:^{
+        [UIView animateWithDuration:kFadeAnimationDuration animations:^{
             self.view.alpha = 0.0f;
         } completion:^(BOOL finished) {
             [self.view removeFromSuperview];
@@ -145,94 +148,91 @@
     }
 }
 
-#pragma mark - Display Photo on View
+#pragma mark - Display Photo Details on View
 
-// Reset the view's contents for each photo to display.
-// We need to reset contents because we reuse the same view.
+// Reset the view's contents before displaying a new photo.
 - (void)resetContents
 {
-    [self setLayoutConstraintsWithSize:CGSizeMake(500.0f, 500.0f)];    
+    [self setLayoutConstraintsWithSize:CGSizeMake(500.0f, 500.0f)];
+    
     self.imageView.image = nil;
     self.photoTitleLabel.text = @"";
     self.userFullNameLabel.text = @"";
 }
 
+// Load the photo asynchronously and display it on the view.
 - (void)displayPhoto
 {
-    // Get the thumbnail from the memory (if available) or disk cache.
-    // We'll display the low resolution thumbnail while we load the larger size
-    // photo in the background.
-    SDImageCache *imageCache = [SDImageCache sharedImageCache];
-    UIImage *thumbnail = [imageCache imageFromDiskCacheForKey:[self.photo.thumbnailURL absoluteString]];
-    
+    UIImage *photo = [[SDImageCache sharedImageCache] imageFromMemoryCacheForKey:[self.photo.photoURL absoluteString]];
+
     // If photo is in memory cache, we can just display the image immediately.
-    // So, there's no need to show a progress HUD. Otherwise, the progress HUD will
-    // flash on screen and disappear.
-    UIImage *photo = [imageCache imageFromMemoryCacheForKey:[self.photo.photoURL absoluteString]];
-    
+    // Else we will have to load the photo in asynchronously.
     if (photo) {
         self.imageView.image = photo;
-        self.photoSize = photo.size;
-        [self sizeViewToAspectFitPhotoAnimated:YES];
+        [self sizeToAspectFitPhotoAnimated:YES];
     } else {
-        [MBProgressHUD showHUDAddedTo:self.imageView animated:YES];
-        
-        // Load image asynchronously from network or disk cache.
-        [self.imageView setImageWithURL:self.photo.photoURL placeholderImage:thumbnail options:0 completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
-            [MBProgressHUD hideHUDForView:self.imageView animated:YES];
-            self.photoSize = image.size;
-            [self sizeViewToAspectFitPhotoAnimated:YES];
-        }];
+        [self loadPhoto];
     }
     
     self.photoTitleLabel.text = self.photo.title;
     self.userFullNameLabel.text = self.photo.userFullName;
 }
 
-#pragma mark - Resize View to Aspect Fit Photo
+// Load the photo asynchronously and display it on the image view.
+- (void)loadPhoto
+{
+    [MBProgressHUD showHUDAddedTo:self.imageView animated:YES];
+    
+    // We'll display the low resolution thumbnail as a placeholder while we
+    // load the larger size photo in the background.
+    UIImage *thumbnail = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:[self.photo.thumbnailURL absoluteString]];
+    
+    // Load image asynchronously from network or disk cache.
+    [self.imageView setImageWithURL:self.photo.photoURL placeholderImage:thumbnail options:0 completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
+        if (image) {
+            [MBProgressHUD hideHUDForView:self.imageView animated:YES];
+            [self sizeToAspectFitPhotoAnimated:YES];
+        } else if (error) {
+            NSLog(@"[SDWebImage Error] - %@", [error localizedDescription]);
+        }
+    }];
+}
+
+#pragma mark - Resize to Aspect Fit Photo within Screen
 
 /*
- Resizes this view to aspect fit the photo without exceeding the window's bounds.
+ Resizes the view to aspect fit the photo.
  */
-- (void)sizeViewToAspectFitPhotoAnimated:(BOOL)animated
+- (void)sizeToAspectFitPhotoAnimated:(BOOL)animated
 {
-    // Invalid photo size. Do nothing.
-    if (0 == self.photoSize.width || 0 == self.photoSize.height) {
+    // If there is no image, there's no need to resize view.
+    if (!self.imageView.image) {
         return;
     }
     
+    // Original photo size before any scaling.
+    CGSize photoSize = self.imageView.image.size;
+    
     // Calculate scale factor required to aspect fit the photo.
-    CGFloat scaleFactor = [self scaleFactorForViewToAspectFitPhoto];
+    CGFloat scaleFactor = [self scaleFactorToAspectFitPhotoWithSize:photoSize];
     
     // Create the view's new bounds from the scaled size.
-    CGSize scaledPhotoSize = CGSizeMake(floorf(self.photoSize.width * scaleFactor),
-                                        floorf(self.photoSize.height * scaleFactor));
-    
-//    NSLog(@"Scaled Photo Size = %@", NSStringFromCGSize(scaledPhotoSize));
+    CGSize scaledPhotoSize = CGSizeMake(floorf(photoSize.width * scaleFactor),
+                                        floorf(photoSize.height * scaleFactor));
     
     // Animate the layout constraints changing, if animation is wanted.
     if (animated) {
-        // Animating NSLayoutConstraints - http://stackoverflow.com/a/12926646
+        // Animating NSLayoutConstraints:
+        // http://stackoverflow.com/a/12926646
+        // http://stackoverflow.com/q/12622424
+        
         [self setLayoutConstraintsWithSize:scaledPhotoSize];
-        [UIView animateWithDuration:0.5f animations:^{
+        [UIView animateWithDuration:kResizeAnimationDuration animations:^{
             [self.view layoutIfNeeded];
         }];
     } else {
         [self setLayoutConstraintsWithSize:scaledPhotoSize];
     }
-}
-
-/*
- Set the content view's width and height layout constraints to the given size.
- */
-- (void)setLayoutConstraintsWithSize:(CGSize)size
-{
-    self.widthLayoutConstraint.constant = size.width;
-    self.heightLayoutConstraint.constant = size.height;
-   
-    // Let the view know that we have modified the constraints,
-    // so that it can update any dependent constraints.
-    [self.view setNeedsUpdateConstraints];
 }
 
 // The padding from the view's edge to the window's edge.
@@ -242,27 +242,109 @@ static CGFloat const kViewToWindowPadding = 60.0f;
  Calculate the scale factor to resize view so that it aspect fits the
  photo within the window bounds (with some margin spacing).
  */
-- (CGFloat)scaleFactorForViewToAspectFitPhoto
+- (CGFloat)scaleFactorToAspectFitPhotoWithSize:(CGSize)photoSize
 {
     // Use the root view's bounds so that it takes into account the
-    // device orientation (portrait or landscape).
-    CGSize windowSize = self.rootView.bounds.size;
-    
-//    NSLog(@"Window Size = %@", NSStringFromCGSize(windowSize));
-//    NSLog(@"Photo Size = %@", NSStringFromCGSize(self.photoSize));
+    // device orientation.
+    CGSize viewSize = self.rootView.bounds.size;
     
     // Include a padding space, so that scaled view will not be too close to
     // the window's edge.
-    CGSize photoWithPaddingSize = CGSizeMake(self.photoSize.width + kViewToWindowPadding,
-                                             self.photoSize.height + kViewToWindowPadding);
-    CGFloat scaleFactor = 1.0f;
-    if (photoWithPaddingSize.width > windowSize.width) {
-        scaleFactor = windowSize.width / photoWithPaddingSize.width;
-    } else if (photoWithPaddingSize.height > windowSize.height) {
-        scaleFactor = windowSize.height / photoWithPaddingSize.height;
+    CGSize photoWithPaddingSize = CGSizeMake(photoSize.width + kViewToWindowPadding,
+                                             photoSize.height + kViewToWindowPadding);
+    
+    // Scale factor to fit photo's width.
+    CGFloat widthScaleFactor = 1.0f;
+    if (photoWithPaddingSize.width > viewSize.width) {
+        widthScaleFactor = viewSize.width / photoWithPaddingSize.width;
+    }
+
+    // Scale factor to fit photo's height.
+    CGFloat heightScaleFactor = 1.0f;
+    if (photoWithPaddingSize.height > viewSize.height) {
+        heightScaleFactor = viewSize.height / photoWithPaddingSize.height;
     }
     
-    return scaleFactor;
+    // Return the scale factor that will be needed to fit both photo's width and height.
+    return fminf(widthScaleFactor, heightScaleFactor);
 }
+
+/*
+ Set the content view's width and height layout constraints to the given size.
+ */
+- (void)setLayoutConstraintsWithSize:(CGSize)size
+{
+    self.widthLayoutConstraint.constant = size.width;
+    self.heightLayoutConstraint.constant = size.height;
+    
+    // Let the view know that we have modified the constraints,
+    // so that it can update any dependent constraints.
+    [self.view setNeedsUpdateConstraints];
+}
+
+/*
+ Resizes this view to aspect fit the photo without exceeding the window's bounds.
+ */
+//- (void)sizeViewToAspectFitPhotoAnimated:(BOOL)animated
+//{
+//    // Invalid photo size. Do nothing.
+//    if (0 == self.photoSize.width || 0 == self.photoSize.height) {
+//        return;
+//    }
+//    
+//    // Calculate scale factor required to aspect fit the photo.
+//    CGFloat scaleFactor = [self scaleFactorForViewToAspectFitPhoto];
+//    
+//    // Create the view's new bounds from the scaled size.
+//    CGSize scaledPhotoSize = CGSizeMake(floorf(self.photoSize.width * scaleFactor),
+//                                        floorf(self.photoSize.height * scaleFactor));
+//    
+////    NSLog(@"Scaled Photo Size = %@", NSStringFromCGSize(scaledPhotoSize));
+//    
+//    // Animate the layout constraints changing, if animation is wanted.
+//    if (animated) {
+//        // Animating NSLayoutConstraints:
+//        // http://stackoverflow.com/a/12926646
+//        // http://stackoverflow.com/q/12622424
+//        
+//        [self setLayoutConstraintsWithSize:scaledPhotoSize];
+//        [UIView animateWithDuration:0.5f animations:^{
+//            [self.view layoutIfNeeded];
+//        }];
+//    } else {
+//        [self setLayoutConstraintsWithSize:scaledPhotoSize];
+//    }
+//}
+
+
+//// The padding from the view's edge to the window's edge.
+//static CGFloat const kViewToWindowPadding = 60.0f;
+//
+///*
+// Calculate the scale factor to resize view so that it aspect fits the
+// photo within the window bounds (with some margin spacing).
+// */
+//- (CGFloat)scaleFactorForViewToAspectFitPhoto
+//{
+//    // Use the root view's bounds so that it takes into account the
+//    // device orientation (portrait or landscape).
+//    CGSize windowSize = self.rootView.bounds.size;
+//    
+////    NSLog(@"Window Size = %@", NSStringFromCGSize(windowSize));
+////    NSLog(@"Photo Size = %@", NSStringFromCGSize(self.photoSize));
+//    
+//    // Include a padding space, so that scaled view will not be too close to
+//    // the window's edge.
+//    CGSize photoWithPaddingSize = CGSizeMake(self.photoSize.width + kViewToWindowPadding,
+//                                             self.photoSize.height + kViewToWindowPadding);
+//    CGFloat scaleFactor = 1.0f;
+//    if (photoWithPaddingSize.width > windowSize.width) {
+//        scaleFactor = windowSize.width / photoWithPaddingSize.width;
+//    } else if (photoWithPaddingSize.height > windowSize.height) {
+//        scaleFactor = windowSize.height / photoWithPaddingSize.height;
+//    }
+//    
+//    return scaleFactor;
+//}
 
 @end

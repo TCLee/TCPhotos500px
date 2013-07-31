@@ -19,7 +19,7 @@
  Presents this modal view controller with an optional animation.
  The view will be added to the given window, so that it will sit above all other views.
  */
-- (void)presentViewWithWindow:(UIWindow *)window photo:(TCPhoto *)photo animated:(BOOL)animated;
+- (void)presentWithWindow:(UIWindow *)window photo:(TCPhoto *)photo animated:(BOOL)animated;
 
 /*
  Dismisses this view controller with an optional animation.

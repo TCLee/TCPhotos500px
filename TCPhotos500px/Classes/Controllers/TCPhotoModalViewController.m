@@ -28,6 +28,7 @@
 // Top and leading layout constraints are used for animation purposes.
 @property (nonatomic, strong) IBOutlet NSLayoutConstraint *topLayoutConstraint;
 @property (nonatomic, strong) IBOutlet NSLayoutConstraint *leadingLayoutConstraint;
+
 // Center the content view horizontally and vertically within its superview.
 @property (nonatomic, strong) NSLayoutConstraint *horizontalCenterLayoutConstraint;
 @property (nonatomic, strong) NSLayoutConstraint *verticalCenterLayoutConstraint;
@@ -109,41 +110,8 @@ static NSTimeInterval const kPresentAnimationDuration = 1.0f;
 
 #pragma mark - Present and Dismiss Modal View Controller
 
-- (void)presentWithWindow:(UIWindow *)window photo:(TCPhoto *)photo animated:(BOOL)animated
-{    
-    self.photo = photo;
-    
-    // The root view will have the correct transform applied to it by the root view controller.
-    // We will use the same transform for our view, so that its orientation is correct.
-    self.rootView = window.rootViewController.view;
-    [self synchronizeWithRootView];
-    
-    // Allow user to tap anywhere to dismiss the modal view.
-    [self.view addGestureRecognizer:self.tapToDismissGestureRecognizer];    
-    
-    // Add our view as a subview of UIWindow so that it will be above all the
-    // other views.
-    [window addSubview:self.view];
-    
-    // We re-use the same view for all photos, so we need to reset its contents.
-    [self resetContents];
-    
-    // Perform a simple fade in animation, if requested.
-    if (animated) {
-        self.view.alpha = 0.0f;
-        [UIView animateWithDuration:kFadeAnimationDuration animations:^{
-            self.view.alpha = 1.0f;
-        }];
-    }
-    
-    // Load the photo asynchronously and display it on the view.
-    [self displayPhoto];
-}
-
 - (void)presentWithWindow:(UIWindow *)window photo:(TCPhoto *)photo sender:(UIView *)sender
-{
-    self.photo = photo;
-    
+{    
     // We must synchronize our view's transform, bounds and center with the root view
     // controller's view. This is because our view is directly added to a window.
     self.rootView = window.rootViewController.view;
@@ -154,6 +122,10 @@ static NSTimeInterval const kPresentAnimationDuration = 1.0f;
     
     // Convert the sender's rectangle to our view's coordinate system.
     self.senderRect = [sender convertRect:sender.bounds toView:self.view];
+    
+    // Initially, display the thumbnail of the photo.
+    self.photo = photo;
+    [self displayThumbnail];
     
     // Perform the present modal view controller animation.
     [self performPresentAnimation];
@@ -216,6 +188,7 @@ static NSTimeInterval const kPresentAnimationDuration = 1.0f;
  */
 - (void)setPresentAnimationEndLayoutConstraints
 {
+    // Only need to create the center layout constraints once.
     if (!self.horizontalCenterLayoutConstraint) {
         self.horizontalCenterLayoutConstraint = [self centerConstraintWithAttribute:NSLayoutAttributeCenterX];
     }
@@ -223,9 +196,9 @@ static NSTimeInterval const kPresentAnimationDuration = 1.0f;
         self.verticalCenterLayoutConstraint = [self centerConstraintWithAttribute:NSLayoutAttributeCenterY];
     }
     
-    self.widthLayoutConstraint.constant = 500.0f;
-    self.heightLayoutConstraint.constant = 500.0f;
-    
+    self.widthLayoutConstraint.constant = 450.0f;
+    self.heightLayoutConstraint.constant = 450.0f;
+        
     [self.view removeConstraint:self.topLayoutConstraint];
     [self.view removeConstraint:self.leadingLayoutConstraint];
     [self.view addConstraint:self.verticalCenterLayoutConstraint];
@@ -273,7 +246,7 @@ static NSTimeInterval const kPresentAnimationDuration = 1.0f;
     // Perform the animation.    
     [UIView animateWithDuration:kPresentAnimationDuration animations:^{
         self.dimView.alpha = 0.6f;
-        self.textContentView.alpha = 1.0f;
+//        self.textContentView.alpha = 1.0f;
         
         // Tell the view to perform layout, so that constraints changes will be animated.
         [self.view layoutIfNeeded];
@@ -281,37 +254,38 @@ static NSTimeInterval const kPresentAnimationDuration = 1.0f;
         // Add tap to dismiss gesture only after the animation is completed.
         // Otherwise, user can dismiss the view in the middle of an animation.
         [self.view addGestureRecognizer:self.tapToDismissGestureRecognizer];
+        
+        // First animation completed. Chain the second animation to display photo.
+        [self displayPhoto];
     }];
 }
 
 #pragma mark - Display Photo Details on View
 
-// Reset the view's contents before displaying a new photo.
-- (void)resetContents
+- (void)displayThumbnail
 {
-    [self setLayoutConstraintsWithSize:CGSizeMake(500.0f, 500.0f)];
+    // Thumbnail
+    UIImage *thumbnail = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:[self.photo.thumbnailURL absoluteString]];
+    self.imageView.image = thumbnail;
     
-    self.imageView.image = nil;
-    self.photoTitleLabel.text = @"";
-    self.userFullNameLabel.text = @"";
+    // Photo title and user's full name.
+    self.photoTitleLabel.text = self.photo.title;
+    self.userFullNameLabel.text = self.photo.userFullName;
 }
 
-// Load the photo asynchronously and display it on the view.
+// Display the photo model's contents on the view.
 - (void)displayPhoto
 {
-    UIImage *photo = [[SDImageCache sharedImageCache] imageFromMemoryCacheForKey:[self.photo.photoURL absoluteString]];
-
+    UIImage *photoImage = [[SDImageCache sharedImageCache] imageFromMemoryCacheForKey:[self.photo.photoURL absoluteString]];
+    
     // If photo is in memory cache, we can just display the image immediately.
     // Else we will have to load the photo in asynchronously.
-    if (photo) {
-        self.imageView.image = photo;
+    if (photoImage) {
+        self.imageView.image = photoImage;
         [self sizeToAspectFitPhotoAnimated:YES];
     } else {
         [self loadPhoto];
-    }
-    
-    self.photoTitleLabel.text = self.photo.title;
-    self.userFullNameLabel.text = self.photo.userFullName;
+    }    
 }
 
 // Load the photo asynchronously and display it on the image view.
@@ -362,12 +336,17 @@ static NSTimeInterval const kPresentAnimationDuration = 1.0f;
         // http://stackoverflow.com/a/12926646
         // http://stackoverflow.com/q/12622424
         
-        [self setLayoutConstraintsWithSize:scaledPhotoSize];
+        self.widthLayoutConstraint.constant = scaledPhotoSize.width;
+        self.heightLayoutConstraint.constant = scaledPhotoSize.height;
         [UIView animateWithDuration:kResizeAnimationDuration animations:^{
             [self.view layoutIfNeeded];
+
+#warning Experiment fading in labels only after image has been loaded.
+            self.textContentView.alpha = 1.0f;
         }];
     } else {
-        [self setLayoutConstraintsWithSize:scaledPhotoSize];
+        self.widthLayoutConstraint.constant = scaledPhotoSize.width;
+        self.heightLayoutConstraint.constant = scaledPhotoSize.height;
     }
 }
 
@@ -405,86 +384,5 @@ static CGFloat const kViewToWindowPadding = 60.0f;
     return fminf(widthScaleFactor, heightScaleFactor);
 }
 
-/*
- Set the content view's width and height layout constraints to the given size.
- */
-- (void)setLayoutConstraintsWithSize:(CGSize)size
-{
-    self.widthLayoutConstraint.constant = size.width;
-    self.heightLayoutConstraint.constant = size.height;
-    
-    // Let the view know that we have modified the constraints,
-    // so that it can update any dependent constraints.
-    [self.view setNeedsUpdateConstraints];
-}
-
-//- (void)presentWithWindow:(UIWindow *)window photo:(TCPhoto *)photo senderRect:(CGRect)senderRect
-//{
-//    // Add our view as window's subview.
-//    self.rootView = window.rootViewController.view;
-//    [self synchronizeWithRootView];
-//    [window addSubview:self.view];
-//
-//    // Display thumbnail on image view as a placeholder.
-//    UIImage *thumbnail = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:[photo.thumbnailURL absoluteString]];
-//    self.imageView.image = thumbnail;
-//
-//    // Create the top and left margin constraints to match the sender's rect.
-//    // This will make it look like the photo is expanding from the thumbnail.
-//    NSLayoutConstraint *topConstraint = [NSLayoutConstraint constraintWithItem:self.contentView
-//                                                                     attribute:NSLayoutAttributeTop
-//                                                                     relatedBy:NSLayoutRelationEqual
-//                                                                        toItem:self.view
-//                                                                     attribute:NSLayoutAttributeTop
-//                                                                    multiplier:1.0f
-//                                                                      constant:senderRect.origin.y];
-//    NSLayoutConstraint *leftConstraint = [NSLayoutConstraint constraintWithItem:self.contentView
-//                                                                         attribute:NSLayoutAttributeLeading
-//                                                                         relatedBy:NSLayoutRelationEqual
-//                                                                            toItem:self.view
-//                                                                         attribute:NSLayoutAttributeLeading
-//                                                                        multiplier:1.0f
-//                                                                          constant:senderRect.origin.x];
-//
-//    // Remove the end center constraints and replace with the start top and left
-//    // constraints for the animation.
-//    [self.view removeConstraint:self.horizontalCenterLayoutConstraint];
-//    [self.view removeConstraint:self.verticalCenterLayoutConstraint];
-//    [self.view addConstraint:topConstraint];
-//    [self.view addConstraint:leftConstraint];
-//
-//    // Start size to animate from.
-//    self.widthLayoutConstraint.constant = senderRect.size.width;
-//    self.heightLayoutConstraint.constant = senderRect.size.height;
-//
-//    // Tell the view to perform the necessary layout as our constraints have changed.
-//    [self.view setNeedsUpdateConstraints];
-//    [self.view layoutIfNeeded];
-//
-//    // Dim view will have a fade-in animation.
-//    self.dimView.alpha = 0.0f;
-//    self.textContentView.alpha = 0.0f;
-//
-//    // Animate to the end constraints.
-//    [UIView animateWithDuration:1.0f animations:^{
-//        self.dimView.alpha = 0.6f;
-//        self.textContentView.alpha = 1.0f;
-//
-//        [self.view removeConstraint:topConstraint];
-//        [self.view removeConstraint:leftConstraint];
-//        [self.view addConstraint:self.verticalCenterLayoutConstraint];
-//        [self.view addConstraint:self.horizontalCenterLayoutConstraint];
-//
-//        self.widthLayoutConstraint.constant = 500.0f;
-//        self.heightLayoutConstraint.constant = 500.0f;
-//
-//        [self.view setNeedsUpdateConstraints];
-//        [self.view layoutIfNeeded];
-//    } completion:^(BOOL finished) {
-//        // Add tap to dismiss gesture only after the animation is completed.
-//        [self.view addGestureRecognizer:self.tapToDismissGestureRecognizer];
-//    }];
-//}
-
-
 @end
+

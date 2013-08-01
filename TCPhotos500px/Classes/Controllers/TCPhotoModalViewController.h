@@ -16,18 +16,11 @@
 @interface TCPhotoModalViewController : UIViewController
 
 /*
- Presents this modal view controller with an optional animation.
- The view will be added to the given window, so that it will sit above all other views.
  */
-- (void)presentWithWindow:(UIWindow *)window photo:(TCPhoto *)photo animated:(BOOL)animated;
+- (void)presentWithWindow:(UIWindow *)window
+                    photo:(TCPhoto *)photo
+                   sender:(UIView *)sender;
 
-/*
- Dismisses this view controller with an optional animation.
- */
-//- (void)dismissAnimated:(BOOL)animated;
-
-
-- (void)presentWithWindow:(UIWindow *)window photo:(TCPhoto *)photo sender:(UIView *)sender;
 - (void)dismiss;
 
 @end

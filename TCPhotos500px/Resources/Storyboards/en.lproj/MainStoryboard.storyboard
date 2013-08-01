@@ -99,12 +99,12 @@
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="XFy-Ry-EWX" firstAttribute="bottom" secondItem="2bm-86-HqX" secondAttribute="bottom" type="default" id="1Mk-Ib-R7L"/>
-                            <constraint firstItem="XFy-Ry-EWX" firstAttribute="trailing" secondItem="2bm-86-HqX" secondAttribute="trailing" type="default" id="E5u-Br-Ge6"/>
-                            <constraint firstItem="XFy-Ry-EWX" firstAttribute="centerX" secondItem="mtH-co-xwH" secondAttribute="centerX" type="user" id="dap-h8-3hh"/>
-                            <constraint firstItem="XFy-Ry-EWX" firstAttribute="top" secondItem="2bm-86-HqX" secondAttribute="top" type="default" id="frb-3p-yok"/>
-                            <constraint firstItem="mtH-co-xwH" firstAttribute="centerY" secondItem="XFy-Ry-EWX" secondAttribute="centerY" type="user" id="iQx-ed-Yab"/>
-                            <constraint firstItem="XFy-Ry-EWX" firstAttribute="leading" secondItem="2bm-86-HqX" secondAttribute="leading" type="default" id="tyn-nN-bpE"/>
+                            <constraint firstItem="XFy-Ry-EWX" firstAttribute="bottom" secondItem="2bm-86-HqX" secondAttribute="bottom" type="user" id="1Mk-Ib-R7L"/>
+                            <constraint firstItem="XFy-Ry-EWX" firstAttribute="trailing" secondItem="2bm-86-HqX" secondAttribute="trailing" type="user" id="E5u-Br-Ge6"/>
+                            <constraint firstItem="mtH-co-xwH" firstAttribute="leading" secondItem="2bm-86-HqX" secondAttribute="leading" constant="134" type="user" id="Jq6-9m-7Ka"/>
+                            <constraint firstItem="XFy-Ry-EWX" firstAttribute="top" secondItem="2bm-86-HqX" secondAttribute="top" type="user" id="frb-3p-yok"/>
+                            <constraint firstItem="mtH-co-xwH" firstAttribute="top" secondItem="2bm-86-HqX" secondAttribute="top" constant="262" type="user" id="hao-or-b1f"/>
+                            <constraint firstItem="XFy-Ry-EWX" firstAttribute="leading" secondItem="2bm-86-HqX" secondAttribute="leading" type="user" id="tyn-nN-bpE"/>
                         </constraints>
                     </view>
                     <nil key="simulatedStatusBarMetrics"/>
@@ -112,12 +112,12 @@
                         <outlet property="contentView" destination="mtH-co-xwH" id="79y-cC-q2B"/>
                         <outlet property="dimView" destination="XFy-Ry-EWX" id="XSL-mD-BV3"/>
                         <outlet property="heightLayoutConstraint" destination="Lpi-Ue-T8k" id="mrN-1G-LiD"/>
-                        <outlet property="horizontalCenterLayoutConstraint" destination="dap-h8-3hh" id="7xL-2d-SXw"/>
                         <outlet property="imageView" destination="QR0-Gb-r3S" id="ZPN-ro-opS"/>
+                        <outlet property="leadingLayoutConstraint" destination="Jq6-9m-7Ka" id="LT0-G4-GAC"/>
                         <outlet property="photoTitleLabel" destination="U2L-70-VqJ" id="Prq-zP-S56"/>
                         <outlet property="textContentView" destination="dU5-Ur-vgz" id="cxN-fp-UD5"/>
+                        <outlet property="topLayoutConstraint" destination="hao-or-b1f" id="J0s-01-2T4"/>
                         <outlet property="userFullNameLabel" destination="Aiq-Tx-mLe" id="gWs-Gb-n8v"/>
-                        <outlet property="verticalCenterLayoutConstraint" destination="iQx-ed-Yab" id="y0o-2c-fdq"/>
                         <outlet property="widthLayoutConstraint" destination="Ip9-fT-pU5" id="v8I-rT-MPg"/>
                     </connections>
                 </viewController>
@@ -258,12 +258,12 @@
                 <relationship kind="outlet" name="contentView" candidateClass="UIView"/>
                 <relationship kind="outlet" name="dimView" candidateClass="UIView"/>
                 <relationship kind="outlet" name="heightLayoutConstraint" candidateClass="NSLayoutConstraint"/>
-                <relationship kind="outlet" name="horizontalCenterLayoutConstraint" candidateClass="NSLayoutConstraint"/>
                 <relationship kind="outlet" name="imageView" candidateClass="UIImageView"/>
+                <relationship kind="outlet" name="leftLayoutConstraint" candidateClass="NSLayoutConstraint"/>
                 <relationship kind="outlet" name="photoTitleLabel" candidateClass="UILabel"/>
                 <relationship kind="outlet" name="textContentView" candidateClass="UIView"/>
+                <relationship kind="outlet" name="topLayoutConstraint" candidateClass="NSLayoutConstraint"/>
                 <relationship kind="outlet" name="userFullNameLabel" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="verticalCenterLayoutConstraint" candidateClass="NSLayoutConstraint"/>
                 <relationship kind="outlet" name="widthLayoutConstraint" candidateClass="NSLayoutConstraint"/>
             </relationships>
         </class>
@@ -286,6 +286,9 @@
         </class>
         <class className="UICollectionViewFlowLayout" superclassName="UICollectionViewLayout">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/UICollectionViewFlowLayout.h"/>
+        </class>
+        <class className="UICollectionViewLayout" superclassName="NSObject">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/UICollectionViewLayout.h"/>
         </class>
     </classes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">

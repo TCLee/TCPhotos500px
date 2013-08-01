@@ -25,13 +25,12 @@
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *widthLayoutConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *heightLayoutConstraint;
 
-// This constraint is removed and added during animation, so make this IBOutlet a strong reference.
-@property (strong, nonatomic) IBOutlet NSLayoutConstraint *horizontalCenterLayoutConstraint;
-@property (strong, nonatomic) IBOutlet NSLayoutConstraint *verticalCenterLayoutConstraint;
-
-// Top and left layout constraints are only used for animation purposes.
-@property (nonatomic, strong) NSLayoutConstraint *topLayoutConstraint;
-@property (nonatomic, strong) NSLayoutConstraint *leftLayoutConstraint;
+// Top and leading layout constraints are used for animation purposes.
+@property (nonatomic, strong) IBOutlet NSLayoutConstraint *topLayoutConstraint;
+@property (nonatomic, strong) IBOutlet NSLayoutConstraint *leadingLayoutConstraint;
+// Center the content view horizontally and vertically within its superview.
+@property (nonatomic, strong) NSLayoutConstraint *horizontalCenterLayoutConstraint;
+@property (nonatomic, strong) NSLayoutConstraint *verticalCenterLayoutConstraint;
 
 // Tap anywhere on the photo modal view to dismiss it.
 @property (nonatomic, strong, readonly) UITapGestureRecognizer *tapToDismissGestureRecognizer;
@@ -157,14 +156,12 @@ static NSTimeInterval const kPresentAnimationDuration = 1.0f;
     self.senderRect = [sender convertRect:sender.bounds toView:self.view];
     
     // Perform the present modal view controller animation.
-    [self animatePresent];
+    [self performPresentAnimation];
 }
 
 - (void)dismiss
 {
-    // Since it's a reverse of the present animation, the present animation start
-    // state is the dismiss animation end state.
-    [self setStartPresentAnimationLayoutConstraints];
+    [self setDismissAnimationEndLayoutConstraints];
     
     [UIView animateWithDuration:kPresentAnimationDuration animations:^{
         // Fade out the dim view and labels container view.
@@ -175,9 +172,6 @@ static NSTimeInterval const kPresentAnimationDuration = 1.0f;
         [self.view layoutIfNeeded];
     } completion:^(BOOL finished) {
         [self.view removeFromSuperview];
-        
-        // Reset the layout constraints back to the storyboard values.
-        [self setEndPresentAnimationLayoutConstraints];
     }];
 }
 
@@ -191,7 +185,10 @@ static NSTimeInterval const kPresentAnimationDuration = 1.0f;
 
 #pragma mark - Present and Dismiss Animations
 
-- (NSLayoutConstraint *)marginConstraintWithAttribute:(NSLayoutAttribute)attribute constant:(CGFloat)constant
+/*
+ Create and returns a horizontal or vertical center layout constraint.
+ */
+- (NSLayoutConstraint *)centerConstraintWithAttribute:(NSLayoutAttribute)attribute
 {
     return [NSLayoutConstraint constraintWithItem:self.contentView
                                         attribute:attribute
@@ -199,58 +196,75 @@ static NSTimeInterval const kPresentAnimationDuration = 1.0f;
                                            toItem:self.contentView.superview
                                         attribute:attribute
                                        multiplier:1.0f
-                                         constant:constant];
+                                         constant:0.0f];
 }
 
 /*
+ Start layout constraints for the present animation.
  */
-- (void)setStartPresentAnimationLayoutConstraints
+- (void)setPresentAnimationStartLayoutConstraints
 {
-    [self.view removeConstraint:self.horizontalCenterLayoutConstraint];
-    [self.view removeConstraint:self.verticalCenterLayoutConstraint];
-    [self.view addConstraint:self.topLayoutConstraint];
-    [self.view addConstraint:self.leftLayoutConstraint];
-    
+    // Use the sender's rect to determine the start point and size for the content view.
+    self.leadingLayoutConstraint.constant = self.senderRect.origin.x;
+    self.topLayoutConstraint.constant = self.senderRect.origin.y;
     self.widthLayoutConstraint.constant = self.senderRect.size.width;
     self.heightLayoutConstraint.constant = self.senderRect.size.height;
 }
 
 /*
+ End layout constraints for the present animation.
  */
-- (void)setEndPresentAnimationLayoutConstraints
+- (void)setPresentAnimationEndLayoutConstraints
 {
-    // Remove the end center constraints and replace with the start top and left
-    // constraints for the animation.
-    [self.view removeConstraint:self.topLayoutConstraint];
-    [self.view removeConstraint:self.leftLayoutConstraint];
-    [self.view addConstraint:self.verticalCenterLayoutConstraint];
-    [self.view addConstraint:self.horizontalCenterLayoutConstraint];
+    if (!self.horizontalCenterLayoutConstraint) {
+        self.horizontalCenterLayoutConstraint = [self centerConstraintWithAttribute:NSLayoutAttributeCenterX];
+    }
+    if (!self.verticalCenterLayoutConstraint) {
+        self.verticalCenterLayoutConstraint = [self centerConstraintWithAttribute:NSLayoutAttributeCenterY];
+    }
     
-    // Start size to animate from.
     self.widthLayoutConstraint.constant = 500.0f;
     self.heightLayoutConstraint.constant = 500.0f;
+    
+    [self.view removeConstraint:self.topLayoutConstraint];
+    [self.view removeConstraint:self.leadingLayoutConstraint];
+    [self.view addConstraint:self.verticalCenterLayoutConstraint];
+    [self.view addConstraint:self.horizontalCenterLayoutConstraint];
+}
+
+/*
+ Start layout constraints for the dismiss animation is the same as end layout 
+ constraints for the present animation. So, there's nothing to do here.
+ */
+
+/*
+ End layout constraints for the dismiss animation.
+ */
+- (void)setDismissAnimationEndLayoutConstraints
+{
+    // The dismiss animation is the reverse of the present animation.
+    // So the start of the present animation is the end of the dismiss animation.
+    [self setPresentAnimationStartLayoutConstraints];
+    
+    [self.view removeConstraint:self.horizontalCenterLayoutConstraint];
+    [self.view removeConstraint:self.verticalCenterLayoutConstraint];
+    [self.view addConstraint:self.topLayoutConstraint];
+    [self.view addConstraint:self.leadingLayoutConstraint];
 }
 
 /*
  Present modal view controller animation.
  */
-- (void)animatePresent
+- (void)performPresentAnimation
 {
-    // Create the top and left margin constraints to match the sender's rect.
-    // This will make it look like the photo is expanding from the thumbnail.
-    self.topLayoutConstraint = [self marginConstraintWithAttribute:NSLayoutAttributeTop
-                                                                          constant:self.senderRect.origin.y];
-    self.leftLayoutConstraint = [self marginConstraintWithAttribute:NSLayoutAttributeLeading
-                                                                    constant:self.senderRect.origin.x];
-    
     // Start animation layout constraints.
-    [self setStartPresentAnimationLayoutConstraints];
+    [self setPresentAnimationStartLayoutConstraints];
     
     // Tell the view to perform layout immediately as our constraints have changed.
     [self.view layoutIfNeeded];
     
     // End animation layout constraints.
-    [self setEndPresentAnimationLayoutConstraints];
+    [self setPresentAnimationEndLayoutConstraints];
     
     // Dim view and the labels container view will have a fade-in animation.
     self.dimView.alpha = 0.0f;

@@ -21,12 +21,17 @@
 @property (weak, nonatomic) IBOutlet UILabel *photoTitleLabel;
 @property (weak, nonatomic) IBOutlet UILabel *userFullNameLabel;
 
-// Width and Height layout constraints will be adjusted dynamically to best aspect
-// fit the photo.
+// Width and Height layout constraints will be adjusted dynamically to best aspect fit the photo.
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *widthLayoutConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *heightLayoutConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *horizontalCenterLayoutConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *verticalCenterLayoutConstraint;
+
+// This constraint is removed and added during animation, so make this IBOutlet a strong reference.
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *horizontalCenterLayoutConstraint;
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *verticalCenterLayoutConstraint;
+
+// Top and left layout constraints are only used for animation purposes.
+@property (nonatomic, strong) NSLayoutConstraint *topLayoutConstraint;
+@property (nonatomic, strong) NSLayoutConstraint *leftLayoutConstraint;
 
 // Tap anywhere on the photo modal view to dismiss it.
 @property (nonatomic, strong, readonly) UITapGestureRecognizer *tapToDismissGestureRecognizer;
@@ -35,6 +40,10 @@
 // We will match our view's transform, bounds and center to the root view.
 @property (nonatomic, weak) UIView *rootView;
 
+// The source view's rect that triggered this modal view controller to be presented.
+// We need this rect when we perform the present and dismiss animation.
+@property (nonatomic, assign) CGRect senderRect;
+
 @property (nonatomic, strong) TCPhoto *photo;
 
 @end
@@ -42,6 +51,7 @@
 // Constants for the animation duration.
 static NSTimeInterval const kFadeAnimationDuration = 0.5f;
 static NSTimeInterval const kResizeAnimationDuration = 0.5f;
+static NSTimeInterval const kPresentAnimationDuration = 1.0f;
 
 @implementation TCPhotoModalViewController
 
@@ -131,100 +141,133 @@ static NSTimeInterval const kResizeAnimationDuration = 0.5f;
     [self displayPhoto];
 }
 
-- (void)presentWithWindow:(UIWindow *)window photo:(TCPhoto *)photo senderRect:(CGRect)senderRect
+- (void)presentWithWindow:(UIWindow *)window photo:(TCPhoto *)photo sender:(UIView *)sender
 {
-    // Add our view as window's subview.
+    self.photo = photo;
+    
+    // We must synchronize our view's transform, bounds and center with the root view
+    // controller's view. This is because our view is directly added to a window.
     self.rootView = window.rootViewController.view;
-    [self synchronizeWithRootView];    
+    [self synchronizeWithRootView];
+    
+    // Add our view as window's subview, so that it sits above all other views.
     [window addSubview:self.view];
     
-    // Display thumbnail on image view as a placeholder.
-    UIImage *thumbnail = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:[photo.thumbnailURL absoluteString]];
-    self.imageView.image = thumbnail;
+    // Convert the sender's rectangle to our view's coordinate system.
+    self.senderRect = [sender convertRect:sender.bounds toView:self.view];
     
-    // Create the top and left margin constraints to match the sender's rect.
-    // This will make it look like the photo is expanding from the thumbnail.
-    NSLayoutConstraint *topConstraint = [NSLayoutConstraint constraintWithItem:self.contentView
-                                                                     attribute:NSLayoutAttributeTop
-                                                                     relatedBy:NSLayoutRelationEqual
-                                                                        toItem:self.view
-                                                                     attribute:NSLayoutAttributeTop
-                                                                    multiplier:1.0f
-                                                                      constant:senderRect.origin.y];
-    NSLayoutConstraint *leftConstraint = [NSLayoutConstraint constraintWithItem:self.contentView
-                                                                         attribute:NSLayoutAttributeLeading
-                                                                         relatedBy:NSLayoutRelationEqual
-                                                                            toItem:self.view
-                                                                         attribute:NSLayoutAttributeLeading
-                                                                        multiplier:1.0f
-                                                                          constant:senderRect.origin.x];
-    
-    // Remove the end center constraints and replace with the start top and left
-    // constraints for the animation.
-    [self.view removeConstraint:self.horizontalCenterLayoutConstraint];
-    [self.view removeConstraint:self.verticalCenterLayoutConstraint];
-    [self.view addConstraint:topConstraint];
-    [self.view addConstraint:leftConstraint];
+    // Perform the present modal view controller animation.
+    [self animatePresent];
+}
 
-    // Start size to animate from.
-    self.widthLayoutConstraint.constant = senderRect.size.width;
-    self.heightLayoutConstraint.constant = senderRect.size.height;
+- (void)dismiss
+{
+    // Since it's a reverse of the present animation, the present animation start
+    // state is the dismiss animation end state.
+    [self setStartPresentAnimationLayoutConstraints];
     
-    // Tell the view to perform the necessary layout as our constraints have changed.
-    [self.view setNeedsUpdateConstraints];
-    [self.view layoutIfNeeded];
-    
-    // Dim view will have a fade-in animation.
-    self.dimView.alpha = 0.0f;
-    self.textContentView.alpha = 0.0f;
-    
-    // Animate to the end constraints.
-    [UIView animateWithDuration:1.0f animations:^{
-        self.dimView.alpha = 0.6f;
-        self.textContentView.alpha = 1.0f;
+    [UIView animateWithDuration:kPresentAnimationDuration animations:^{
+        // Fade out the dim view and labels container view.
+        self.dimView.alpha = 0.0f;
+        self.textContentView.alpha = 0.0f;
         
-        [self.view removeConstraint:topConstraint];
-        [self.view removeConstraint:leftConstraint];
-        [self.view addConstraint:self.verticalCenterLayoutConstraint];
-        [self.view addConstraint:self.horizontalCenterLayoutConstraint];
-        
-        self.widthLayoutConstraint.constant = 500.0f;
-        self.heightLayoutConstraint.constant = 500.0f;
-        
-        [self.view setNeedsUpdateConstraints];        
+        // Tell the view to perform layout, so that constraints changes will be animated.
         [self.view layoutIfNeeded];
     } completion:^(BOOL finished) {
-        // Add tap to dismiss gesture only after the animation is completed.
-        [self.view addGestureRecognizer:self.tapToDismissGestureRecognizer];
+        [self.view removeFromSuperview];
+        
+        // Reset the layout constraints back to the storyboard values.
+        [self setEndPresentAnimationLayoutConstraints];
     }];
 }
-
-- (void)dismissAnimated:(BOOL)animated
-{
-
-}
-
-//- (void)dismissAnimated:(BOOL)animated
-//{
-//    // Perform a simple fade out animation before removing from superview, if animaton is requested.
-//    if (animated) {
-//        self.view.alpha = 1.0f;
-//        [UIView animateWithDuration:kFadeAnimationDuration animations:^{
-//            self.view.alpha = 0.0f;
-//        } completion:^(BOOL finished) {
-//            [self.view removeFromSuperview];
-//        }];
-//    } else {
-//        [self.view removeFromSuperview];
-//    }
-//}
 
 - (void)handleTapToDismiss:(UITapGestureRecognizer *)sender
 {
     if (UIGestureRecognizerStateRecognized == sender.state) {
         [self.view removeGestureRecognizer:sender];
-        [self dismissAnimated:YES];
+        [self dismiss];
     }
+}
+
+#pragma mark - Present and Dismiss Animations
+
+- (NSLayoutConstraint *)marginConstraintWithAttribute:(NSLayoutAttribute)attribute constant:(CGFloat)constant
+{
+    return [NSLayoutConstraint constraintWithItem:self.contentView
+                                        attribute:attribute
+                                        relatedBy:NSLayoutRelationEqual
+                                           toItem:self.contentView.superview
+                                        attribute:attribute
+                                       multiplier:1.0f
+                                         constant:constant];
+}
+
+/*
+ */
+- (void)setStartPresentAnimationLayoutConstraints
+{
+    [self.view removeConstraint:self.horizontalCenterLayoutConstraint];
+    [self.view removeConstraint:self.verticalCenterLayoutConstraint];
+    [self.view addConstraint:self.topLayoutConstraint];
+    [self.view addConstraint:self.leftLayoutConstraint];
+    
+    self.widthLayoutConstraint.constant = self.senderRect.size.width;
+    self.heightLayoutConstraint.constant = self.senderRect.size.height;
+}
+
+/*
+ */
+- (void)setEndPresentAnimationLayoutConstraints
+{
+    // Remove the end center constraints and replace with the start top and left
+    // constraints for the animation.
+    [self.view removeConstraint:self.topLayoutConstraint];
+    [self.view removeConstraint:self.leftLayoutConstraint];
+    [self.view addConstraint:self.verticalCenterLayoutConstraint];
+    [self.view addConstraint:self.horizontalCenterLayoutConstraint];
+    
+    // Start size to animate from.
+    self.widthLayoutConstraint.constant = 500.0f;
+    self.heightLayoutConstraint.constant = 500.0f;
+}
+
+/*
+ Present modal view controller animation.
+ */
+- (void)animatePresent
+{
+    // Create the top and left margin constraints to match the sender's rect.
+    // This will make it look like the photo is expanding from the thumbnail.
+    self.topLayoutConstraint = [self marginConstraintWithAttribute:NSLayoutAttributeTop
+                                                                          constant:self.senderRect.origin.y];
+    self.leftLayoutConstraint = [self marginConstraintWithAttribute:NSLayoutAttributeLeading
+                                                                    constant:self.senderRect.origin.x];
+    
+    // Start animation layout constraints.
+    [self setStartPresentAnimationLayoutConstraints];
+    
+    // Tell the view to perform layout immediately as our constraints have changed.
+    [self.view layoutIfNeeded];
+    
+    // End animation layout constraints.
+    [self setEndPresentAnimationLayoutConstraints];
+    
+    // Dim view and the labels container view will have a fade-in animation.
+    self.dimView.alpha = 0.0f;
+    self.textContentView.alpha = 0.0f;
+    
+    // Perform the animation.    
+    [UIView animateWithDuration:kPresentAnimationDuration animations:^{
+        self.dimView.alpha = 0.6f;
+        self.textContentView.alpha = 1.0f;
+        
+        // Tell the view to perform layout, so that constraints changes will be animated.
+        [self.view layoutIfNeeded];
+    } completion:^(BOOL finished) {
+        // Add tap to dismiss gesture only after the animation is completed.
+        // Otherwise, user can dismiss the view in the middle of an animation.
+        [self.view addGestureRecognizer:self.tapToDismissGestureRecognizer];
+    }];
 }
 
 #pragma mark - Display Photo Details on View
@@ -360,5 +403,74 @@ static CGFloat const kViewToWindowPadding = 60.0f;
     // so that it can update any dependent constraints.
     [self.view setNeedsUpdateConstraints];
 }
+
+//- (void)presentWithWindow:(UIWindow *)window photo:(TCPhoto *)photo senderRect:(CGRect)senderRect
+//{
+//    // Add our view as window's subview.
+//    self.rootView = window.rootViewController.view;
+//    [self synchronizeWithRootView];
+//    [window addSubview:self.view];
+//
+//    // Display thumbnail on image view as a placeholder.
+//    UIImage *thumbnail = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:[photo.thumbnailURL absoluteString]];
+//    self.imageView.image = thumbnail;
+//
+//    // Create the top and left margin constraints to match the sender's rect.
+//    // This will make it look like the photo is expanding from the thumbnail.
+//    NSLayoutConstraint *topConstraint = [NSLayoutConstraint constraintWithItem:self.contentView
+//                                                                     attribute:NSLayoutAttributeTop
+//                                                                     relatedBy:NSLayoutRelationEqual
+//                                                                        toItem:self.view
+//                                                                     attribute:NSLayoutAttributeTop
+//                                                                    multiplier:1.0f
+//                                                                      constant:senderRect.origin.y];
+//    NSLayoutConstraint *leftConstraint = [NSLayoutConstraint constraintWithItem:self.contentView
+//                                                                         attribute:NSLayoutAttributeLeading
+//                                                                         relatedBy:NSLayoutRelationEqual
+//                                                                            toItem:self.view
+//                                                                         attribute:NSLayoutAttributeLeading
+//                                                                        multiplier:1.0f
+//                                                                          constant:senderRect.origin.x];
+//
+//    // Remove the end center constraints and replace with the start top and left
+//    // constraints for the animation.
+//    [self.view removeConstraint:self.horizontalCenterLayoutConstraint];
+//    [self.view removeConstraint:self.verticalCenterLayoutConstraint];
+//    [self.view addConstraint:topConstraint];
+//    [self.view addConstraint:leftConstraint];
+//
+//    // Start size to animate from.
+//    self.widthLayoutConstraint.constant = senderRect.size.width;
+//    self.heightLayoutConstraint.constant = senderRect.size.height;
+//
+//    // Tell the view to perform the necessary layout as our constraints have changed.
+//    [self.view setNeedsUpdateConstraints];
+//    [self.view layoutIfNeeded];
+//
+//    // Dim view will have a fade-in animation.
+//    self.dimView.alpha = 0.0f;
+//    self.textContentView.alpha = 0.0f;
+//
+//    // Animate to the end constraints.
+//    [UIView animateWithDuration:1.0f animations:^{
+//        self.dimView.alpha = 0.6f;
+//        self.textContentView.alpha = 1.0f;
+//
+//        [self.view removeConstraint:topConstraint];
+//        [self.view removeConstraint:leftConstraint];
+//        [self.view addConstraint:self.verticalCenterLayoutConstraint];
+//        [self.view addConstraint:self.horizontalCenterLayoutConstraint];
+//
+//        self.widthLayoutConstraint.constant = 500.0f;
+//        self.heightLayoutConstraint.constant = 500.0f;
+//
+//        [self.view setNeedsUpdateConstraints];
+//        [self.view layoutIfNeeded];
+//    } completion:^(BOOL finished) {
+//        // Add tap to dismiss gesture only after the animation is completed.
+//        [self.view addGestureRecognizer:self.tapToDismissGestureRecognizer];
+//    }];
+//}
+
 
 @end

@@ -198,13 +198,17 @@ static NSString * const kSegueIdentifierCategoryPopover = @"showCategoryList";
 //                                                   photo:photoCell.photo
 //                                                animated:YES];
         
-        UIWindow *window = self.view.window;
-        UIView *rootView = window.rootViewController.view;
-        CGRect photoCellRectInRootView = [photoCell convertRect:photoCell.bounds toView:rootView];
+//        UIWindow *window = self.view.window;
+//        UIView *rootView = window.rootViewController.view;
+//        CGRect photoCellRectInRootView = [photoCell convertRect:photoCell.bounds toView:rootView];
+//        
+//        [self.photoModalViewController presentWithWindow:window
+//                                                   photo:photoCell.photo
+//                                              senderRect:photoCellRectInRootView];
         
-        [self.photoModalViewController presentWithWindow:window
+        [self.photoModalViewController presentWithWindow:self.view.window
                                                    photo:photoCell.photo
-                                              senderRect:photoCellRectInRootView];
+                                                  sender:photoCell];
     }
 }
 

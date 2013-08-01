@@ -24,9 +24,10 @@
 /*
  Dismisses this view controller with an optional animation.
  */
-- (void)dismissAnimated:(BOOL)animated;
+//- (void)dismissAnimated:(BOOL)animated;
 
 
-- (void)presentWithWindow:(UIWindow *)window photo:(TCPhoto *)photo senderRect:(CGRect)senderRect;
+- (void)presentWithWindow:(UIWindow *)window photo:(TCPhoto *)photo sender:(UIView *)sender;
+- (void)dismiss;
 
 @end

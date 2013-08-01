@@ -13,7 +13,11 @@
 
 @interface TCPhotoModalViewController ()
 
+@property (weak, nonatomic) IBOutlet UIView *contentView;
+@property (weak, nonatomic) IBOutlet UIView *dimView;
+
 @property (weak, nonatomic) IBOutlet UIImageView *imageView;
+@property (weak, nonatomic) IBOutlet UIView *textContentView;
 @property (weak, nonatomic) IBOutlet UILabel *photoTitleLabel;
 @property (weak, nonatomic) IBOutlet UILabel *userFullNameLabel;
 
@@ -21,6 +25,8 @@
 // fit the photo.
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *widthLayoutConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *heightLayoutConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *horizontalCenterLayoutConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *verticalCenterLayoutConstraint;
 
 // Tap anywhere on the photo modal view to dismiss it.
 @property (nonatomic, strong, readonly) UITapGestureRecognizer *tapToDismissGestureRecognizer;
@@ -125,20 +131,93 @@ static NSTimeInterval const kResizeAnimationDuration = 0.5f;
     [self displayPhoto];
 }
 
+- (void)presentWithWindow:(UIWindow *)window photo:(TCPhoto *)photo senderRect:(CGRect)senderRect
+{
+    // Add our view as window's subview.
+    self.rootView = window.rootViewController.view;
+    [self synchronizeWithRootView];    
+    [window addSubview:self.view];
+    
+    // Display thumbnail on image view as a placeholder.
+    UIImage *thumbnail = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:[photo.thumbnailURL absoluteString]];
+    self.imageView.image = thumbnail;
+    
+    // Create the top and left margin constraints to match the sender's rect.
+    // This will make it look like the photo is expanding from the thumbnail.
+    NSLayoutConstraint *topConstraint = [NSLayoutConstraint constraintWithItem:self.contentView
+                                                                     attribute:NSLayoutAttributeTop
+                                                                     relatedBy:NSLayoutRelationEqual
+                                                                        toItem:self.view
+                                                                     attribute:NSLayoutAttributeTop
+                                                                    multiplier:1.0f
+                                                                      constant:senderRect.origin.y];
+    NSLayoutConstraint *leftConstraint = [NSLayoutConstraint constraintWithItem:self.contentView
+                                                                         attribute:NSLayoutAttributeLeading
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:self.view
+                                                                         attribute:NSLayoutAttributeLeading
+                                                                        multiplier:1.0f
+                                                                          constant:senderRect.origin.x];
+    
+    // Remove the end center constraints and replace with the start top and left
+    // constraints for the animation.
+    [self.view removeConstraint:self.horizontalCenterLayoutConstraint];
+    [self.view removeConstraint:self.verticalCenterLayoutConstraint];
+    [self.view addConstraint:topConstraint];
+    [self.view addConstraint:leftConstraint];
+
+    // Start size to animate from.
+    self.widthLayoutConstraint.constant = senderRect.size.width;
+    self.heightLayoutConstraint.constant = senderRect.size.height;
+    
+    // Tell the view to perform the necessary layout as our constraints have changed.
+    [self.view setNeedsUpdateConstraints];
+    [self.view layoutIfNeeded];
+    
+    // Dim view will have a fade-in animation.
+    self.dimView.alpha = 0.0f;
+    self.textContentView.alpha = 0.0f;
+    
+    // Animate to the end constraints.
+    [UIView animateWithDuration:1.0f animations:^{
+        self.dimView.alpha = 0.6f;
+        self.textContentView.alpha = 1.0f;
+        
+        [self.view removeConstraint:topConstraint];
+        [self.view removeConstraint:leftConstraint];
+        [self.view addConstraint:self.verticalCenterLayoutConstraint];
+        [self.view addConstraint:self.horizontalCenterLayoutConstraint];
+        
+        self.widthLayoutConstraint.constant = 500.0f;
+        self.heightLayoutConstraint.constant = 500.0f;
+        
+        [self.view setNeedsUpdateConstraints];        
+        [self.view layoutIfNeeded];
+    } completion:^(BOOL finished) {
+        // Add tap to dismiss gesture only after the animation is completed.
+        [self.view addGestureRecognizer:self.tapToDismissGestureRecognizer];
+    }];
+}
+
 - (void)dismissAnimated:(BOOL)animated
 {
-    // Perform a simple fade out animation before removing from superview, if animaton is requested.
-    if (animated) {
-        self.view.alpha = 1.0f;
-        [UIView animateWithDuration:kFadeAnimationDuration animations:^{
-            self.view.alpha = 0.0f;
-        } completion:^(BOOL finished) {
-            [self.view removeFromSuperview];
-        }];
-    } else {
-        [self.view removeFromSuperview];    
-    }
+
 }
+
+//- (void)dismissAnimated:(BOOL)animated
+//{
+//    // Perform a simple fade out animation before removing from superview, if animaton is requested.
+//    if (animated) {
+//        self.view.alpha = 1.0f;
+//        [UIView animateWithDuration:kFadeAnimationDuration animations:^{
+//            self.view.alpha = 0.0f;
+//        } completion:^(BOOL finished) {
+//            [self.view removeFromSuperview];
+//        }];
+//    } else {
+//        [self.view removeFromSuperview];
+//    }
+//}
 
 - (void)handleTapToDismiss:(UITapGestureRecognizer *)sender
 {
@@ -281,70 +360,5 @@ static CGFloat const kViewToWindowPadding = 60.0f;
     // so that it can update any dependent constraints.
     [self.view setNeedsUpdateConstraints];
 }
-
-/*
- Resizes this view to aspect fit the photo without exceeding the window's bounds.
- */
-//- (void)sizeViewToAspectFitPhotoAnimated:(BOOL)animated
-//{
-//    // Invalid photo size. Do nothing.
-//    if (0 == self.photoSize.width || 0 == self.photoSize.height) {
-//        return;
-//    }
-//    
-//    // Calculate scale factor required to aspect fit the photo.
-//    CGFloat scaleFactor = [self scaleFactorForViewToAspectFitPhoto];
-//    
-//    // Create the view's new bounds from the scaled size.
-//    CGSize scaledPhotoSize = CGSizeMake(floorf(self.photoSize.width * scaleFactor),
-//                                        floorf(self.photoSize.height * scaleFactor));
-//    
-////    NSLog(@"Scaled Photo Size = %@", NSStringFromCGSize(scaledPhotoSize));
-//    
-//    // Animate the layout constraints changing, if animation is wanted.
-//    if (animated) {
-//        // Animating NSLayoutConstraints:
-//        // http://stackoverflow.com/a/12926646
-//        // http://stackoverflow.com/q/12622424
-//        
-//        [self setLayoutConstraintsWithSize:scaledPhotoSize];
-//        [UIView animateWithDuration:0.5f animations:^{
-//            [self.view layoutIfNeeded];
-//        }];
-//    } else {
-//        [self setLayoutConstraintsWithSize:scaledPhotoSize];
-//    }
-//}
-
-
-//// The padding from the view's edge to the window's edge.
-//static CGFloat const kViewToWindowPadding = 60.0f;
-//
-///*
-// Calculate the scale factor to resize view so that it aspect fits the
-// photo within the window bounds (with some margin spacing).
-// */
-//- (CGFloat)scaleFactorForViewToAspectFitPhoto
-//{
-//    // Use the root view's bounds so that it takes into account the
-//    // device orientation (portrait or landscape).
-//    CGSize windowSize = self.rootView.bounds.size;
-//    
-////    NSLog(@"Window Size = %@", NSStringFromCGSize(windowSize));
-////    NSLog(@"Photo Size = %@", NSStringFromCGSize(self.photoSize));
-//    
-//    // Include a padding space, so that scaled view will not be too close to
-//    // the window's edge.
-//    CGSize photoWithPaddingSize = CGSizeMake(self.photoSize.width + kViewToWindowPadding,
-//                                             self.photoSize.height + kViewToWindowPadding);
-//    CGFloat scaleFactor = 1.0f;
-//    if (photoWithPaddingSize.width > windowSize.width) {
-//        scaleFactor = windowSize.width / photoWithPaddingSize.width;
-//    } else if (photoWithPaddingSize.height > windowSize.height) {
-//        scaleFactor = windowSize.height / photoWithPaddingSize.height;
-//    }
-//    
-//    return scaleFactor;
-//}
 
 @end

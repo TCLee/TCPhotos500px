@@ -26,4 +26,7 @@
  */
 - (void)dismissAnimated:(BOOL)animated;
 
+
+- (void)presentWithWindow:(UIWindow *)window photo:(TCPhoto *)photo senderRect:(CGRect)senderRect;
+
 @end

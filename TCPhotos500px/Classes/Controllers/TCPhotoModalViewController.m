@@ -17,7 +17,6 @@
 @property (weak, nonatomic) IBOutlet UIView *dimView;
 
 @property (weak, nonatomic) IBOutlet UIImageView *imageView;
-@property (weak, nonatomic) IBOutlet UIView *textContentView;
 @property (weak, nonatomic) IBOutlet UILabel *photoTitleLabel;
 @property (weak, nonatomic) IBOutlet UILabel *userFullNameLabel;
 
@@ -40,9 +39,11 @@
 // We will match our view's transform, bounds and center to the root view.
 @property (nonatomic, weak) UIView *rootView;
 
-// The source view's rect that triggered this modal view controller to be presented.
-// We need this rect when we perform the present and dismiss animation.
-@property (nonatomic, assign) CGRect senderRect;
+// The source view that triggered this modal view controller to be presented.
+// We need this view's rect when we perform the present and dismiss animation.
+// It is possible that the view's rect will change during rotation, so we will always
+// have to calculate the most up-to-date rect.
+@property (nonatomic, weak) UIView *sender;
 
 @property (nonatomic, strong) TCPhoto *photo;
 
@@ -51,7 +52,7 @@
 // Constants for the animation duration.
 static NSTimeInterval const kFadeAnimationDuration = 0.5f;
 static NSTimeInterval const kResizeAnimationDuration = 0.5f;
-static NSTimeInterval const kPresentAnimationDuration = 1.0f;
+static NSTimeInterval const kPresentAndDismissAnimationDuration = 1.0f;
 
 @implementation TCPhotoModalViewController
 
@@ -120,12 +121,13 @@ static NSTimeInterval const kPresentAnimationDuration = 1.0f;
     // Add our view as window's subview, so that it sits above all other views.
     [window addSubview:self.view];
     
-    // Convert the sender's rectangle to our view's coordinate system.
-    self.senderRect = [sender convertRect:sender.bounds toView:self.view];
-    
     // Initially, display the thumbnail of the photo.
     self.photo = photo;
     [self displayThumbnail];
+    
+    // We need a reference to the sender to animate from and to. The sender's frame
+    // can change when the view is rotated, so we cannot cache the sender's frame only.
+    self.sender = sender;
     
     // Perform the present modal view controller animation.
     [self performPresentAnimation];
@@ -133,12 +135,13 @@ static NSTimeInterval const kPresentAnimationDuration = 1.0f;
 
 - (void)dismiss
 {
-    [self setDismissAnimationEndLayoutConstraints];
-    
-    [UIView animateWithDuration:kPresentAnimationDuration animations:^{
-        // Fade out the dim view and labels container view.
-        self.dimView.alpha = 0.0f;
-        self.textContentView.alpha = 0.0f;
+    // End layout constraints for the dismiss animation.
+    [self setDismissAnimationEndLayoutConstraints];    
+        
+    [UIView animateWithDuration:kPresentAndDismissAnimationDuration animations:^{
+        // Fade out the dim view and the content view.
+        self.dimView.alpha = 0.0f;        
+        self.contentView.alpha = 0.0f;
         
         // Tell the view to perform layout, so that constraints changes will be animated.
         [self.view layoutIfNeeded];
@@ -156,6 +159,52 @@ static NSTimeInterval const kPresentAnimationDuration = 1.0f;
 }
 
 #pragma mark - Present and Dismiss Animations
+
+/*
+ Present modal view controller animation.
+ */
+- (void)performPresentAnimation
+{
+    // Start animation layout constraints.
+    [self setPresentAnimationStartLayoutConstraints];
+    
+    // Tell the view to perform layout immediately as our constraints have changed.
+    [self.view layoutIfNeeded];
+    
+    // End animation layout constraints.
+    [self setPresentAnimationEndLayoutConstraints];
+    
+    // Dimming view and content view will have a fade-in animation.
+    self.dimView.alpha = 0.0f;
+    self.contentView.alpha = 0.0f;
+    
+    // Perform the animation.
+    [UIView animateWithDuration:kPresentAndDismissAnimationDuration animations:^{
+        self.dimView.alpha = 0.6f;
+        self.contentView.alpha = 1.0f;
+        
+        // Tell the view to perform layout, so that constraints changes will be animated.
+        [self.view layoutIfNeeded];
+    } completion:^(BOOL finished) {
+        // Add tap to dismiss gesture only after the animation is completed.
+        // Otherwise, user can dismiss the view in the middle of an animation.
+        [self.view addGestureRecognizer:self.tapToDismissGestureRecognizer];
+        
+        // First animation completed. Chain the second animation to
+        // load and display photo.
+        [self displayPhoto];
+    }];
+}
+
+/*
+ Returns the sender's rect in our view's coordinate system.
+ */
+- (CGRect)senderRectInView
+{
+    NSParameterAssert(self.sender.window == self.view.window);
+    
+    return [self.sender convertRect:self.sender.bounds toView:self.view];
+}
 
 /*
  Create and returns a horizontal or vertical center layout constraint.
@@ -177,10 +226,35 @@ static NSTimeInterval const kPresentAnimationDuration = 1.0f;
 - (void)setPresentAnimationStartLayoutConstraints
 {
     // Use the sender's rect to determine the start point and size for the content view.
-    self.leadingLayoutConstraint.constant = self.senderRect.origin.x;
-    self.topLayoutConstraint.constant = self.senderRect.origin.y;
-    self.widthLayoutConstraint.constant = self.senderRect.size.width;
-    self.heightLayoutConstraint.constant = self.senderRect.size.height;
+    CGRect senderRect = [self senderRectInView];
+    
+    // NSInternalInconsistencyException, Reason: "Autolayout doesn't support crossing rotational bounds transforms with edge layout constraints, such as right, left, top, bottom..."
+    // http://stackoverflow.com/q/15139909
+    
+//    UIView *contentView = self.contentView;
+//    NSDictionary *viewsDictionary = NSDictionaryOfVariableBindings(contentView);
+//    NSArray *horizontalConstraints = [NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"H:|-%.2f-[contentView]", senderRect.origin.x]
+//                                                                             options:0
+//                                                                             metrics:nil
+//                                                                               views:viewsDictionary];
+//    NSArray *verticalConstraints = [NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"V:|-%.2f-[contentView]", senderRect.origin.y]
+//                                                                           options:0
+//                                                                           metrics:nil
+//                                                                             views:viewsDictionary];
+//    [self.view removeConstraint:self.topLayoutConstraint];
+//    [self.view removeConstraint:self.leadingLayoutConstraint];
+//    [self.view removeConstraint:self.horizontalCenterLayoutConstraint];
+//    [self.view removeConstraint:self.verticalCenterLayoutConstraint];
+//    
+//    self.leadingLayoutConstraint = horizontalConstraints[0];
+//    self.topLayoutConstraint = verticalConstraints[0];
+//    [self.view addConstraint:self.topLayoutConstraint];
+//    [self.view addConstraint:self.leadingLayoutConstraint];
+    
+    self.leadingLayoutConstraint.constant = senderRect.origin.x;
+    self.topLayoutConstraint.constant = senderRect.origin.y;
+    self.widthLayoutConstraint.constant = senderRect.size.width;
+    self.heightLayoutConstraint.constant = senderRect.size.height;
 }
 
 /*
@@ -225,52 +299,17 @@ static NSTimeInterval const kPresentAnimationDuration = 1.0f;
     [self.view addConstraint:self.leadingLayoutConstraint];
 }
 
-/*
- Present modal view controller animation.
- */
-- (void)performPresentAnimation
-{
-    // Start animation layout constraints.
-    [self setPresentAnimationStartLayoutConstraints];
-    
-    // Tell the view to perform layout immediately as our constraints have changed.
-    [self.view layoutIfNeeded];
-    
-    // End animation layout constraints.
-    [self setPresentAnimationEndLayoutConstraints];
-    
-    // Dim view and the labels container view will have a fade-in animation.
-    self.dimView.alpha = 0.0f;
-    self.textContentView.alpha = 0.0f;
-    
-    // Perform the animation.    
-    [UIView animateWithDuration:kPresentAnimationDuration animations:^{
-        self.dimView.alpha = 0.6f;
-//        self.textContentView.alpha = 1.0f;
-        
-        // Tell the view to perform layout, so that constraints changes will be animated.
-        [self.view layoutIfNeeded];
-    } completion:^(BOOL finished) {
-        // Add tap to dismiss gesture only after the animation is completed.
-        // Otherwise, user can dismiss the view in the middle of an animation.
-        [self.view addGestureRecognizer:self.tapToDismissGestureRecognizer];
-        
-        // First animation completed. Chain the second animation to display photo.
-        [self displayPhoto];
-    }];
-}
-
 #pragma mark - Display Photo Details on View
 
+// Display the photo's thumbnail on the image view.
 - (void)displayThumbnail
 {
-    // Thumbnail
-    UIImage *thumbnail = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:[self.photo.thumbnailURL absoluteString]];
-    self.imageView.image = thumbnail;
-    
     // Photo title and user's full name.
     self.photoTitleLabel.text = self.photo.title;
     self.userFullNameLabel.text = self.photo.userFullName;
+
+    UIImage *thumbnail = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:[self.photo.thumbnailURL absoluteString]];
+    self.imageView.image = thumbnail;
 }
 
 // Display the photo model's contents on the view.
@@ -339,10 +378,7 @@ static NSTimeInterval const kPresentAnimationDuration = 1.0f;
         self.widthLayoutConstraint.constant = scaledPhotoSize.width;
         self.heightLayoutConstraint.constant = scaledPhotoSize.height;
         [UIView animateWithDuration:kResizeAnimationDuration animations:^{
-            [self.view layoutIfNeeded];
-
-#warning Experiment fading in labels only after image has been loaded.
-            self.textContentView.alpha = 1.0f;
+            [self.view layoutIfNeeded];            
         }];
     } else {
         self.widthLayoutConstraint.constant = scaledPhotoSize.width;

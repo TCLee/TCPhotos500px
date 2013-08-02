@@ -115,7 +115,6 @@
                         <outlet property="imageView" destination="QR0-Gb-r3S" id="ZPN-ro-opS"/>
                         <outlet property="leadingLayoutConstraint" destination="Jq6-9m-7Ka" id="LT0-G4-GAC"/>
                         <outlet property="photoTitleLabel" destination="U2L-70-VqJ" id="Prq-zP-S56"/>
-                        <outlet property="textContentView" destination="dU5-Ur-vgz" id="cxN-fp-UD5"/>
                         <outlet property="topLayoutConstraint" destination="hao-or-b1f" id="J0s-01-2T4"/>
                         <outlet property="userFullNameLabel" destination="Aiq-Tx-mLe" id="gWs-Gb-n8v"/>
                         <outlet property="widthLayoutConstraint" destination="Ip9-fT-pU5" id="v8I-rT-MPg"/>
@@ -259,7 +258,7 @@
                 <relationship kind="outlet" name="dimView" candidateClass="UIView"/>
                 <relationship kind="outlet" name="heightLayoutConstraint" candidateClass="NSLayoutConstraint"/>
                 <relationship kind="outlet" name="imageView" candidateClass="UIImageView"/>
-                <relationship kind="outlet" name="leftLayoutConstraint" candidateClass="NSLayoutConstraint"/>
+                <relationship kind="outlet" name="leadingLayoutConstraint" candidateClass="NSLayoutConstraint"/>
                 <relationship kind="outlet" name="photoTitleLabel" candidateClass="UILabel"/>
                 <relationship kind="outlet" name="textContentView" candidateClass="UIView"/>
                 <relationship kind="outlet" name="topLayoutConstraint" candidateClass="NSLayoutConstraint"/>
@@ -286,9 +285,6 @@
         </class>
         <class className="UICollectionViewFlowLayout" superclassName="UICollectionViewLayout">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/UICollectionViewFlowLayout.h"/>
-        </class>
-        <class className="UICollectionViewLayout" superclassName="NSObject">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/UICollectionViewLayout.h"/>
         </class>
     </classes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">

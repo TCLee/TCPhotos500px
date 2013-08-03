@@ -101,9 +101,9 @@
                         <constraints>
                             <constraint firstItem="XFy-Ry-EWX" firstAttribute="bottom" secondItem="2bm-86-HqX" secondAttribute="bottom" type="user" id="1Mk-Ib-R7L"/>
                             <constraint firstItem="XFy-Ry-EWX" firstAttribute="trailing" secondItem="2bm-86-HqX" secondAttribute="trailing" type="user" id="E5u-Br-Ge6"/>
-                            <constraint firstItem="mtH-co-xwH" firstAttribute="leading" secondItem="2bm-86-HqX" secondAttribute="leading" constant="134" type="user" id="Jq6-9m-7Ka"/>
                             <constraint firstItem="XFy-Ry-EWX" firstAttribute="top" secondItem="2bm-86-HqX" secondAttribute="top" type="user" id="frb-3p-yok"/>
-                            <constraint firstItem="mtH-co-xwH" firstAttribute="top" secondItem="2bm-86-HqX" secondAttribute="top" constant="262" type="user" id="hao-or-b1f"/>
+                            <constraint firstItem="mtH-co-xwH" firstAttribute="centerX" secondItem="XFy-Ry-EWX" secondAttribute="centerX" type="user" id="iL4-kS-dMO"/>
+                            <constraint firstItem="mtH-co-xwH" firstAttribute="centerY" secondItem="XFy-Ry-EWX" secondAttribute="centerY" type="user" id="qrl-Re-XdJ"/>
                             <constraint firstItem="XFy-Ry-EWX" firstAttribute="leading" secondItem="2bm-86-HqX" secondAttribute="leading" type="user" id="tyn-nN-bpE"/>
                         </constraints>
                     </view>
@@ -112,11 +112,11 @@
                         <outlet property="contentView" destination="mtH-co-xwH" id="79y-cC-q2B"/>
                         <outlet property="dimView" destination="XFy-Ry-EWX" id="XSL-mD-BV3"/>
                         <outlet property="heightLayoutConstraint" destination="Lpi-Ue-T8k" id="mrN-1G-LiD"/>
+                        <outlet property="horizontalCenterLayoutConstraint" destination="iL4-kS-dMO" id="2SN-SY-PWl"/>
                         <outlet property="imageView" destination="QR0-Gb-r3S" id="ZPN-ro-opS"/>
-                        <outlet property="leadingLayoutConstraint" destination="Jq6-9m-7Ka" id="LT0-G4-GAC"/>
                         <outlet property="photoTitleLabel" destination="U2L-70-VqJ" id="Prq-zP-S56"/>
-                        <outlet property="topLayoutConstraint" destination="hao-or-b1f" id="J0s-01-2T4"/>
                         <outlet property="userFullNameLabel" destination="Aiq-Tx-mLe" id="gWs-Gb-n8v"/>
+                        <outlet property="verticalCenterLayoutConstraint" destination="qrl-Re-XdJ" id="0zc-Qu-vkW"/>
                         <outlet property="widthLayoutConstraint" destination="Ip9-fT-pU5" id="v8I-rT-MPg"/>
                     </connections>
                 </viewController>
@@ -257,12 +257,11 @@
                 <relationship kind="outlet" name="contentView" candidateClass="UIView"/>
                 <relationship kind="outlet" name="dimView" candidateClass="UIView"/>
                 <relationship kind="outlet" name="heightLayoutConstraint" candidateClass="NSLayoutConstraint"/>
+                <relationship kind="outlet" name="horizontalCenterLayoutConstraint" candidateClass="NSLayoutConstraint"/>
                 <relationship kind="outlet" name="imageView" candidateClass="UIImageView"/>
-                <relationship kind="outlet" name="leadingLayoutConstraint" candidateClass="NSLayoutConstraint"/>
                 <relationship kind="outlet" name="photoTitleLabel" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="textContentView" candidateClass="UIView"/>
-                <relationship kind="outlet" name="topLayoutConstraint" candidateClass="NSLayoutConstraint"/>
                 <relationship kind="outlet" name="userFullNameLabel" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="verticalCenterLayoutConstraint" candidateClass="NSLayoutConstraint"/>
                 <relationship kind="outlet" name="widthLayoutConstraint" candidateClass="NSLayoutConstraint"/>
             </relationships>
         </class>

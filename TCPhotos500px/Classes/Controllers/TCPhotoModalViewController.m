@@ -25,12 +25,14 @@
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *heightLayoutConstraint;
 
 // Top and leading layout constraints are used for animation purposes.
-@property (nonatomic, strong) IBOutlet NSLayoutConstraint *topLayoutConstraint;
-@property (nonatomic, strong) IBOutlet NSLayoutConstraint *leadingLayoutConstraint;
+@property (nonatomic, strong) NSLayoutConstraint *topLayoutConstraint;
+@property (nonatomic, strong) NSLayoutConstraint *leadingLayoutConstraint;
 
 // Center the content view horizontally and vertically within its superview.
-@property (nonatomic, strong) NSLayoutConstraint *horizontalCenterLayoutConstraint;
-@property (nonatomic, strong) NSLayoutConstraint *verticalCenterLayoutConstraint;
+// This outlet is a strong reference because it will be removed and added dynamically.
+// If we have declared it weak, it will be nil out when we remove these constraints.
+@property (nonatomic, strong) IBOutlet NSLayoutConstraint *horizontalCenterLayoutConstraint;
+@property (nonatomic, strong) IBOutlet NSLayoutConstraint *verticalCenterLayoutConstraint;
 
 // Tap anywhere on the photo modal view to dismiss it.
 @property (nonatomic, strong, readonly) UITapGestureRecognizer *tapToDismissGestureRecognizer;
@@ -41,8 +43,6 @@
 
 // The source view that triggered this modal view controller to be presented.
 // We need this view's rect when we perform the present and dismiss animation.
-// It is possible that the view's rect will change during rotation, so we will always
-// have to calculate the most up-to-date rect.
 @property (nonatomic, weak) UIView *sender;
 
 @property (nonatomic, strong) TCPhoto *photo;
@@ -50,7 +50,6 @@
 @end
 
 // Constants for the animation duration.
-static NSTimeInterval const kFadeAnimationDuration = 0.5f;
 static NSTimeInterval const kResizeAnimationDuration = 0.5f;
 static NSTimeInterval const kPresentAndDismissAnimationDuration = 1.0f;
 
@@ -146,6 +145,9 @@ static NSTimeInterval const kPresentAndDismissAnimationDuration = 1.0f;
         // Tell the view to perform layout, so that constraints changes will be animated.
         [self.view layoutIfNeeded];
     } completion:^(BOOL finished) {
+        // Reset the layout constraints for the next presentation.
+        [self resetLayoutConstraints];
+        
         [self.view removeFromSuperview];
     }];
 }
@@ -198,6 +200,9 @@ static NSTimeInterval const kPresentAndDismissAnimationDuration = 1.0f;
 
 /*
  Returns the sender's rect in our view's coordinate system.
+ 
+ It is possible that the sender's rect will be modified during rotation, so we will
+ always have to ask for the most up-to-date sender's rect.
  */
 - (CGRect)senderRectInView
 {
@@ -207,17 +212,35 @@ static NSTimeInterval const kPresentAndDismissAnimationDuration = 1.0f;
 }
 
 /*
- Create and returns a horizontal or vertical center layout constraint.
+ Creates a NSLayoutAttributeTop or NSLayoutAttributeLeading layout constraint with 
+ the given constant.
+ 
+ We create a new top or leading layout constraint rather than just changing the constant
+ because when the view is rotated the top and leading constraint becomes invalid.
+ Instead, we have to create the constraint using the Visual Format Language.
+ 
+ Reference:
+ NSInternalInconsistencyException, Reason: "Autolayout doesn't support crossing rotational bounds transforms with edge layout constraints, such as right, left, top, bottom..."
+ http://stackoverflow.com/q/15139909
  */
-- (NSLayoutConstraint *)centerConstraintWithAttribute:(NSLayoutAttribute)attribute
+- (NSLayoutConstraint *)constraintWithAttribute:(NSLayoutAttribute)attribute
+                                       constant:(CGFloat)constant
 {
-    return [NSLayoutConstraint constraintWithItem:self.contentView
-                                        attribute:attribute
-                                        relatedBy:NSLayoutRelationEqual
-                                           toItem:self.contentView.superview
-                                        attribute:attribute
-                                       multiplier:1.0f
-                                         constant:0.0f];
+    NSParameterAssert(NSLayoutAttributeTop == attribute || NSLayoutAttributeLeading == attribute);        
+    
+    UIView *contentView = self.contentView;
+    NSDictionary *viewsDictionary = NSDictionaryOfVariableBindings(contentView);
+    
+    NSString *orientation = (attribute == NSLayoutAttributeTop) ? @"V" : @"H";
+    NSString *format = [[NSString alloc] initWithFormat:@"%@:|-%.2f-[contentView]", orientation, constant];
+    
+    NSArray *layoutConstraints = [NSLayoutConstraint constraintsWithVisualFormat:format
+                                                                         options:0
+                                                                         metrics:nil
+                                                                           views:viewsDictionary];        
+    
+    NSAssert([layoutConstraints count] == 1, @"There should only be one layout constraint in the array when creating the constraints array from VFL.");
+    return layoutConstraints[0];
 }
 
 /*
@@ -227,34 +250,26 @@ static NSTimeInterval const kPresentAndDismissAnimationDuration = 1.0f;
 {
     // Use the sender's rect to determine the start point and size for the content view.
     CGRect senderRect = [self senderRectInView];
+
+    // Remove the center layout constraints temporarily. We're going to use top and
+    // leading constraints to set the content view's origin (x, y).
+    [self.view removeConstraints:@[self.horizontalCenterLayoutConstraint,
+                                   self.verticalCenterLayoutConstraint]];
     
-    // NSInternalInconsistencyException, Reason: "Autolayout doesn't support crossing rotational bounds transforms with edge layout constraints, such as right, left, top, bottom..."
-    // http://stackoverflow.com/q/15139909
+    // Create and add the top and leading layout constraints based on sender's origin (x, y).
+    self.leadingLayoutConstraint = [self constraintWithAttribute:NSLayoutAttributeLeading
+                                                        constant:senderRect.origin.x];
+    self.topLayoutConstraint = [self constraintWithAttribute:NSLayoutAttributeTop
+                                                    constant:senderRect.origin.y];    
+    [self.view addConstraints:@[self.topLayoutConstraint,
+                                self.leadingLayoutConstraint]];
     
-//    UIView *contentView = self.contentView;
-//    NSDictionary *viewsDictionary = NSDictionaryOfVariableBindings(contentView);
-//    NSArray *horizontalConstraints = [NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"H:|-%.2f-[contentView]", senderRect.origin.x]
-//                                                                             options:0
-//                                                                             metrics:nil
-//                                                                               views:viewsDictionary];
-//    NSArray *verticalConstraints = [NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"V:|-%.2f-[contentView]", senderRect.origin.y]
-//                                                                           options:0
-//                                                                           metrics:nil
-//                                                                             views:viewsDictionary];
-//    [self.view removeConstraint:self.topLayoutConstraint];
-//    [self.view removeConstraint:self.leadingLayoutConstraint];
-//    [self.view removeConstraint:self.horizontalCenterLayoutConstraint];
-//    [self.view removeConstraint:self.verticalCenterLayoutConstraint];
-//    
-//    self.leadingLayoutConstraint = horizontalConstraints[0];
-//    self.topLayoutConstraint = verticalConstraints[0];
-//    [self.view addConstraint:self.topLayoutConstraint];
-//    [self.view addConstraint:self.leadingLayoutConstraint];
-    
-    self.leadingLayoutConstraint.constant = senderRect.origin.x;
-    self.topLayoutConstraint.constant = senderRect.origin.y;
+    // Make the content view the same size as the sender.
     self.widthLayoutConstraint.constant = senderRect.size.width;
     self.heightLayoutConstraint.constant = senderRect.size.height;
+    
+    // Let the view know that we've modified the constraints.
+    [self.view setNeedsUpdateConstraints];
 }
 
 /*
@@ -262,21 +277,19 @@ static NSTimeInterval const kPresentAndDismissAnimationDuration = 1.0f;
  */
 - (void)setPresentAnimationEndLayoutConstraints
 {
-    // Only need to create the center layout constraints once.
-    if (!self.horizontalCenterLayoutConstraint) {
-        self.horizontalCenterLayoutConstraint = [self centerConstraintWithAttribute:NSLayoutAttributeCenterX];
-    }
-    if (!self.verticalCenterLayoutConstraint) {
-        self.verticalCenterLayoutConstraint = [self centerConstraintWithAttribute:NSLayoutAttributeCenterY];
-    }
-    
+    // Content view's default size before photo is loaded. It will be resized to
+    // aspect fit the photo when the photo has been loaded.
     self.widthLayoutConstraint.constant = 450.0f;
     self.heightLayoutConstraint.constant = 450.0f;
-        
-    [self.view removeConstraint:self.topLayoutConstraint];
-    [self.view removeConstraint:self.leadingLayoutConstraint];
-    [self.view addConstraint:self.verticalCenterLayoutConstraint];
-    [self.view addConstraint:self.horizontalCenterLayoutConstraint];
+ 
+    // Content view will be centered horizontally and vertically within its superview.
+    [self.view removeConstraints:@[self.topLayoutConstraint,
+                                   self.leadingLayoutConstraint]];
+    [self.view addConstraints:@[self.verticalCenterLayoutConstraint,
+                                self.horizontalCenterLayoutConstraint]];
+    
+    // Let the view know that we've modified the constraints.
+    [self.view setNeedsUpdateConstraints];
 }
 
 /*
@@ -291,13 +304,22 @@ static NSTimeInterval const kPresentAndDismissAnimationDuration = 1.0f;
 {
     // The dismiss animation is the reverse of the present animation.
     // So the start of the present animation is the end of the dismiss animation.
-    [self setPresentAnimationStartLayoutConstraints];
-    
-    [self.view removeConstraint:self.horizontalCenterLayoutConstraint];
-    [self.view removeConstraint:self.verticalCenterLayoutConstraint];
-    [self.view addConstraint:self.topLayoutConstraint];
-    [self.view addConstraint:self.leadingLayoutConstraint];
+    [self setPresentAnimationStartLayoutConstraints];    
 }
+
+/*
+ Reset the layout constraints for the next presentation.
+ This method is called when the dismiss animation has completed.
+ */
+- (void)resetLayoutConstraints
+{
+    [self.view removeConstraints:@[self.topLayoutConstraint,
+                                   self.leadingLayoutConstraint]];
+    
+    [self.view addConstraints:@[self.horizontalCenterLayoutConstraint,
+                                self.verticalCenterLayoutConstraint]];    
+}
+
 
 #pragma mark - Display Photo Details on View
 

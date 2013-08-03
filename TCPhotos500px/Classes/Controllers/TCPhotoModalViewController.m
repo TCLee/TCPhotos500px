@@ -43,7 +43,7 @@
 
 // The source view that triggered this modal view controller to be presented.
 // We need this view's rect when we perform the present and dismiss animation.
-@property (nonatomic, weak) UIView *sender;
+@property (nonatomic, strong) UIView *sender;
 
 @property (nonatomic, strong) TCPhoto *photo;
 

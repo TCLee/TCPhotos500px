@@ -232,7 +232,7 @@ static NSTimeInterval const kPresentAndDismissAnimationDuration = 1.0f;
     NSDictionary *viewsDictionary = NSDictionaryOfVariableBindings(contentView);
     
     NSString *orientation = (attribute == NSLayoutAttributeTop) ? @"V" : @"H";
-    NSString *format = [[NSString alloc] initWithFormat:@"%@:|-%.2f-[contentView]", orientation, constant];
+    NSString *format = [[NSString alloc] initWithFormat:@"%@:|-(%.2f)-[contentView]", orientation, constant];
     
     NSArray *layoutConstraints = [NSLayoutConstraint constraintsWithVisualFormat:format
                                                                          options:0

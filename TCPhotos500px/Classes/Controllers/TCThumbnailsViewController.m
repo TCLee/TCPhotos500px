@@ -193,19 +193,7 @@ static NSString * const kSegueIdentifierCategoryPopover = @"showCategoryList";
     TCPhotoCell *photoCell = (TCPhotoCell *)[collectionView cellForItemAtIndexPath:indexPath];
     
     // Make sure we have a photo to display before presenting it on the modal view.
-    if (photoCell.photo) {
-//        [self.photoModalViewController presentWithWindow:self.view.window
-//                                                   photo:photoCell.photo
-//                                                animated:YES];
-        
-//        UIWindow *window = self.view.window;
-//        UIView *rootView = window.rootViewController.view;
-//        CGRect photoCellRectInRootView = [photoCell convertRect:photoCell.bounds toView:rootView];
-//        
-//        [self.photoModalViewController presentWithWindow:window
-//                                                   photo:photoCell.photo
-//                                              senderRect:photoCellRectInRootView];
-        
+    if (photoCell.photo) {        
         [self.photoModalViewController presentWithWindow:self.view.window
                                                    photo:photoCell.photo
                                                   sender:photoCell];

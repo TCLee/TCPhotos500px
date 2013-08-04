@@ -238,8 +238,8 @@ static NSTimeInterval const kPresentAndDismissAnimationDuration = 1.0f;
     // Use the sender's rect to determine the start point and size for the content view.
     // It is possible that the sender's rect will be modified during rotation, so we will
     // always have to ask for the most up-to-date sender's rect.
-    CGRect senderRect = [self.sender convertRect:self.sender.bounds toView:self.view];
-
+    CGRect senderRect = [self.view convertRect:self.sender.bounds fromView:self.sender];
+    
     // Remove the center layout constraints temporarily. We're going to use top and
     // leading constraints to set the content view's origin (x, y).
     [self.view removeConstraints:@[self.horizontalCenterLayoutConstraint,

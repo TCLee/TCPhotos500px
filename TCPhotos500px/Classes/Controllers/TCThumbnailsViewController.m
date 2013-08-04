@@ -74,7 +74,7 @@ static NSString * const kSegueIdentifierCategoryPopover = @"showCategoryList";
     
     // Resize the segmented control here, otherwise it will get squished by the autolayout.
     CGFloat currentHeight = self.featureSegmentedControl.bounds.size.height;
-    self.featureSegmentedControl.bounds = CGRectMake(0, 0, 500, currentHeight);
+    self.featureSegmentedControl.bounds = CGRectMake(0.0f, 0.0f, 500.0f, currentHeight);
     
     __weak typeof(self) weakSelf = self;
     

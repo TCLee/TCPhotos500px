@@ -131,18 +131,18 @@
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" indicatorStyle="white" minimumZoomScale="0.0" maximumZoomScale="0.0" dataMode="prototypes" id="iyW-xG-xMZ">
                         <rect key="frame" x="0.0" y="44" width="768" height="980"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
-                        <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="5" minimumInteritemSpacing="5" id="Fpo-kM-bJj">
-                            <size key="itemSize" width="249" height="249"/>
+                        <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="4" minimumInteritemSpacing="4" id="Fpo-kM-bJj">
+                            <size key="itemSize" width="250" height="250"/>
                             <size key="headerReferenceSize" width="0.0" height="0.0"/>
                             <size key="footerReferenceSize" width="0.0" height="0.0"/>
-                            <inset key="sectionInset" minX="5" minY="5" maxX="5" maxY="5"/>
+                            <inset key="sectionInset" minX="4" minY="4" maxX="4" maxY="4"/>
                         </collectionViewFlowLayout>
                         <cells>
                             <collectionViewCell clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="PhotoCell" id="j3j-e9-rkf" customClass="TCPhotoCell">
-                                <rect key="frame" x="5" y="5" width="249" height="249"/>
+                                <rect key="frame" x="4" y="4" width="250" height="250"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                    <rect key="frame" x="0.0" y="0.0" width="249" height="249"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="250" height="250"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" translatesAutoresizingMaskIntoConstraints="NO" id="awj-r4-OrM">
@@ -156,12 +156,12 @@
                                 </view>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
-                                    <constraint firstItem="awj-r4-OrM" firstAttribute="bottom" secondItem="j3j-e9-rkf" secondAttribute="bottom" type="default" id="1pz-Wv-vWj"/>
                                     <constraint firstItem="AAZ-qO-8Lh" firstAttribute="centerY" secondItem="awj-r4-OrM" secondAttribute="centerY" type="default" id="2Fb-h6-sfh"/>
-                                    <constraint firstItem="awj-r4-OrM" firstAttribute="leading" secondItem="j3j-e9-rkf" secondAttribute="leading" type="default" id="3mn-Kk-aSC"/>
+                                    <constraint firstItem="awj-r4-OrM" firstAttribute="leading" secondItem="j3j-e9-rkf" secondAttribute="leading" type="default" id="6HF-wh-0LK"/>
+                                    <constraint firstItem="awj-r4-OrM" firstAttribute="bottom" secondItem="j3j-e9-rkf" secondAttribute="bottom" type="default" id="6TO-jp-QtJ"/>
                                     <constraint firstItem="AAZ-qO-8Lh" firstAttribute="centerX" secondItem="awj-r4-OrM" secondAttribute="centerX" type="default" id="7nH-UJ-4pF"/>
-                                    <constraint firstItem="awj-r4-OrM" firstAttribute="trailing" secondItem="j3j-e9-rkf" secondAttribute="trailing" type="default" id="aCs-Aa-xup"/>
-                                    <constraint firstItem="awj-r4-OrM" firstAttribute="top" secondItem="j3j-e9-rkf" secondAttribute="top" type="default" id="mdP-Ra-gDZ"/>
+                                    <constraint firstItem="awj-r4-OrM" firstAttribute="top" secondItem="j3j-e9-rkf" secondAttribute="top" type="default" id="NoT-BK-pJb"/>
+                                    <constraint firstItem="awj-r4-OrM" firstAttribute="trailing" secondItem="j3j-e9-rkf" secondAttribute="trailing" type="default" id="PJk-CB-PgU"/>
                                 </constraints>
                                 <connections>
                                     <outlet property="activityIndicator" destination="AAZ-qO-8Lh" id="Wq5-yF-kq6"/>

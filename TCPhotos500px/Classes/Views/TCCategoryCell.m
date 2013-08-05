@@ -14,7 +14,6 @@
 - (void)setCategory:(TCPhotoStreamCategory *)category
 {
     self.textLabel.text = category.title;    
-//    [self setSelected:category.isSelected];
     [self setSelected:category.isSelected animated:YES];
 }
 

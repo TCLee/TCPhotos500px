@@ -12,8 +12,6 @@
 		813BDDA117925B9F0076E1A2 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 813BDDA017925B9F0076E1A2 /* CoreGraphics.framework */; };
 		813BDDA717925B9F0076E1A2 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 813BDDA517925B9F0076E1A2 /* InfoPlist.strings */; };
 		813BDDA917925B9F0076E1A2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 813BDDA817925B9F0076E1A2 /* main.m */; };
-		813BDDCC17929B9A0076E1A2 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 813BDDCB17929B9A0076E1A2 /* MobileCoreServices.framework */; };
-		813BDDCE17929B9F0076E1A2 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 813BDDCD17929B9F0076E1A2 /* SystemConfiguration.framework */; };
 		8148303C17AF4BAE00280DDB /* Icon-72.png in Resources */ = {isa = PBXBuildFile; fileRef = 8148303A17AF4BAE00280DDB /* Icon-72.png */; };
 		8148303D17AF4BAE00280DDB /* Icon-72@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8148303B17AF4BAE00280DDB /* Icon-72@2x.png */; };
 		819DF5EF17A666400004A5B3 /* TCPhotoModalViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 819DF5EE17A666400004A5B3 /* TCPhotoModalViewController.m */; };
@@ -42,8 +40,6 @@
 		813BDDA617925B9F0076E1A2 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		813BDDA817925B9F0076E1A2 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		813BDDAA17925B9F0076E1A2 /* TCPhotos500px-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TCPhotos500px-Prefix.pch"; sourceTree = "<group>"; };
-		813BDDCB17929B9A0076E1A2 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
-		813BDDCD17929B9F0076E1A2 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		8148303A17AF4BAE00280DDB /* Icon-72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-72.png"; sourceTree = "<group>"; };
 		8148303B17AF4BAE00280DDB /* Icon-72@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-72@2x.png"; sourceTree = "<group>"; };
 		819DF5ED17A666400004A5B3 /* TCPhotoModalViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCPhotoModalViewController.h; sourceTree = "<group>"; };
@@ -79,8 +75,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				813BDDCE17929B9F0076E1A2 /* SystemConfiguration.framework in Frameworks */,
-				813BDDCC17929B9A0076E1A2 /* MobileCoreServices.framework in Frameworks */,
 				813BDD9D17925B9F0076E1A2 /* UIKit.framework in Frameworks */,
 				813BDD9F17925B9F0076E1A2 /* Foundation.framework in Frameworks */,
 				813BDDA117925B9F0076E1A2 /* CoreGraphics.framework in Frameworks */,
@@ -113,8 +107,6 @@
 		813BDD9B17925B9F0076E1A2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				813BDDCD17929B9F0076E1A2 /* SystemConfiguration.framework */,
-				813BDDCB17929B9A0076E1A2 /* MobileCoreServices.framework */,
 				813BDD9C17925B9F0076E1A2 /* UIKit.framework */,
 				813BDD9E17925B9F0076E1A2 /* Foundation.framework */,
 				813BDDA017925B9F0076E1A2 /* CoreGraphics.framework */,

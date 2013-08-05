@@ -12,11 +12,6 @@
     #import <UIKit/UIKit.h>
     #import <Foundation/Foundation.h>
 
-    // https://github.com/AFNetworking/AFNetworking
-//    #import <SystemConfiguration/SystemConfiguration.h>
-//    #import <MobileCoreServices/MobileCoreServices.h>
-//    #import "AFNetworking.h"
-
     // https://github.com/500px/500px-iOS-api
     #import "PXAPI.h"
 

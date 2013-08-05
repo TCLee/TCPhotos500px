@@ -12,8 +12,9 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    // Only need the consumer key in our app because we only access public photos.
     [PXRequest setConsumerKey:@"J6iaaiJkAk30W3rQkH7vcfaJU3iGLEHPFPfF1K2T"
-               consumerSecret:@"kPuyVyMtOFAttVfFHcfYFsTi6fcaBbBolK8BUbE8"];
+               consumerSecret:nil];
     
     // Override point for customization after application launch.
     return YES;

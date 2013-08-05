@@ -76,22 +76,8 @@ static NSString * const kSegueIdentifierCategoryPopover = @"showCategoryList";
     CGFloat currentHeight = self.featureSegmentedControl.bounds.size.height;
     self.featureSegmentedControl.bounds = CGRectMake(0.0f, 0.0f, 500.0f, currentHeight);
     
-    __weak typeof(self) weakSelf = self;
-    
-    // When user pulls to refresh, we reload the photo stream with the currently
-    // selected feature and category.
-    [self.collectionView addPullToRefreshWithActionHandler:^{
-        __strong typeof(self) strongSelf = weakSelf;
-        
-        [strongSelf reloadPhotoStreamForFeature:strongSelf.photoStream.feature
-                                 category:strongSelf.photoStream.category];
-        
-        [strongSelf.collectionView.pullToRefreshView stopAnimating];
-    }];
-    
-    // SVPullToRefreshView will be nil until after we call addPullToRefreshWithActionHandler:
-    self.collectionView.pullToRefreshView.textColor = [UIColor whiteColor];
-    self.collectionView.pullToRefreshView.arrowColor = [UIColor whiteColor];
+    // Allow user to pull to load in new photos.
+    [self addPullToRefreshView];
 }
 
 #pragma mark - View Rotation Events
@@ -123,6 +109,28 @@ static NSString * const kSegueIdentifierCategoryPopover = @"showCategoryList";
     if (self.photoModalViewController.view.window) {
         [self.photoModalViewController didRotateFromInterfaceOrientation:fromInterfaceOrientation];
     }
+}
+
+#pragma mark - Pull to Refresh
+
+- (void)addPullToRefreshView
+{
+    __weak typeof(self) weakSelf = self;
+    
+    // When user pulls to refresh, we reload the photo stream with the currently
+    // selected feature and category.
+    [self.collectionView addPullToRefreshWithActionHandler:^{
+        __strong typeof(self) strongSelf = weakSelf;
+        
+        [strongSelf reloadPhotoStreamForFeature:strongSelf.photoStream.feature
+                                       category:strongSelf.photoStream.category];
+        
+        [strongSelf.collectionView.pullToRefreshView stopAnimating];
+    }];
+    
+    // SVPullToRefreshView will be nil until after we call addPullToRefreshWithActionHandler:
+    self.collectionView.pullToRefreshView.textColor = [UIColor whiteColor];
+    self.collectionView.pullToRefreshView.arrowColor = [UIColor whiteColor];
 }
 
 #pragma mark - Photo Stream Model

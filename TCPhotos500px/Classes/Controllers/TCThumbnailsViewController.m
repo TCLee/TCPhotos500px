@@ -13,12 +13,19 @@
 #import "TCPhotoStreamCategory.h"
 #import "TCPhoto.h"
 
+// FlatUIKit
+#import "UIColor+FlatUI.h"
+#import "UINavigationBar+FlatUI.h"
+#import "UIBarButtonItem+FlatUI.h"
+#import "UIPopoverController+FlatUI.h"
+#import "FUISegmentedControl.h"
+
 // Storyboard Segue IDs
 static NSString * const kSegueIdentifierCategoryPopover = @"showCategoryList";
 
 @interface TCThumbnailsViewController ()
 
-@property (nonatomic, weak) IBOutlet UISegmentedControl *featureSegmentedControl;
+@property (nonatomic, weak) IBOutlet FUISegmentedControl *featureSegmentedControl;
 @property (nonatomic, weak) IBOutlet UIBarButtonItem *categoryBarButtonItem;
 
 // Show a popover for the list of categories to filter the photo stream.
@@ -72,12 +79,82 @@ static NSString * const kSegueIdentifierCategoryPopover = @"showCategoryList";
 {
     [super viewDidLoad];
     
-    // Resize the segmented control here, otherwise it will get squished by the autolayout.
-    CGFloat currentHeight = self.featureSegmentedControl.bounds.size.height;
-    self.featureSegmentedControl.bounds = CGRectMake(0.0f, 0.0f, 500.0f, currentHeight);
+    // Configure and customize the control's styles.
+    [self configureNavigationBar];
+    [self configureSegmentedControl];
+    [self configureBarButtonItem];
     
-    // Allow user to pull to load in new photos.
+    // Allow user to "Pull-to-Refresh" load in new photos.
     [self addPullToRefreshView];
+    
+    [self addDismissPopoverGestureToNavigationBar];
+}
+
+#pragma mark - Tap Navigation Bar to Dismiss Popover
+
+/* 
+ Dismiss popover when user taps on the navigation bar. By default, navigation bar is 
+ added as one of popover's passthrough views.
+ */
+- (void)addDismissPopoverGestureToNavigationBar
+{
+    UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissPopover:)];
+    tapGestureRecognizer.numberOfTapsRequired = 1;
+    tapGestureRecognizer.cancelsTouchesInView = NO;
+    [self.navigationController.navigationBar addGestureRecognizer:tapGestureRecognizer];
+}
+
+- (void)dismissPopover:(UITapGestureRecognizer *)tapGestureRecognizer
+{
+    [self.categoryListPopoverController dismissPopoverAnimated:YES];
+}
+
+#pragma mark - Customize Views UIAppearance
+
+- (void)configureNavigationBar
+{
+    [self.navigationController.navigationBar configureFlatNavigationBarWithColor:[UIColor blackColor]];
+}
+
+- (void)configureSegmentedControl
+{
+    // Resize the segmented control here, otherwise it will get squished by the autolayout.
+    static const CGFloat kSegmentedControlWidth = 500.0f;
+    CGRect currentBounds = self.featureSegmentedControl.bounds;
+    self.featureSegmentedControl.bounds = CGRectMake(currentBounds.origin.x,currentBounds.origin.y,
+                                                     kSegmentedControlWidth, currentBounds.size.height);
+    
+    self.featureSegmentedControl.selectedFont = [UIFont systemFontOfSize:20.0f];
+    self.featureSegmentedControl.selectedFontColor = [UIColor whiteColor];
+    self.featureSegmentedControl.deselectedFont = [UIFont systemFontOfSize:20.0f];
+    self.featureSegmentedControl.deselectedFontColor = [UIColor grayColor];
+    self.featureSegmentedControl.selectedColor = [UIColor darkGrayColor];
+    self.featureSegmentedControl.deselectedColor = [UIColor clearColor];
+    self.featureSegmentedControl.dividerColor = [UIColor clearColor];
+    self.featureSegmentedControl.cornerRadius = 0.0f;
+    
+    // Adjust segment widths based on their content widths.
+    self.featureSegmentedControl.apportionsSegmentWidthsByContent = YES;
+}
+
+- (void)configureBarButtonItem
+{
+    [self.categoryBarButtonItem configureFlatButtonWithColor:[UIColor alizarinColor]
+                                            highlightedColor:[UIColor pomegranateColor]
+                                                cornerRadius:3.0f];
+    
+    NSDictionary *textAttributes = @{UITextAttributeFont: [UIFont systemFontOfSize:16.0f],
+                                     UITextAttributeTextColor: [UIColor whiteColor],
+                                     UITextAttributeTextShadowColor: [UIColor clearColor],
+                                     UITextAttributeTextShadowOffset: [NSValue valueWithUIOffset:UIOffsetMake(0.0f, 0.0f)]};
+    [self.categoryBarButtonItem setTitleTextAttributes:textAttributes
+                                              forState:UIControlStateNormal];
+}
+
+- (void)configurePopover
+{
+    [self.categoryListPopoverController configureFlatPopoverWithBackgroundColor:[UIColor whiteColor]
+                                                                   cornerRadius:6.0f];
 }
 
 #pragma mark - View Rotation Events
@@ -245,6 +322,7 @@ static NSString * const kSegueIdentifierCategoryPopover = @"showCategoryList";
         // Save a reference to this segue's popover controller.
         // We will need to dismiss it to dismiss the popover later.
         self.categoryListPopoverController = [(UIStoryboardPopoverSegue *)segue popoverController];
+        [self configurePopover];
         
         // Set up ourself as the delegate, so that we know when a category is selected from the list.
         TCCategoryListViewController *categoryListViewController = [segue destinationViewController];

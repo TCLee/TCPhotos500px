@@ -12,6 +12,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="220" height="550"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="separatorColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="CategoryCell" textLabel="tYJ-d9-eQD" style="IBUITableViewCellStyleDefault" id="Z68-me-8eo" customClass="TCCategoryCell">
                                 <rect key="frame" x="0.0" y="22" width="220" height="44"/>
@@ -21,7 +22,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tYJ-d9-eQD">
-                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                             <color key="highlightedColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                         </label>
@@ -177,7 +178,7 @@
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="IiT-E1-eIZ">
                         <barButtonItem key="leftBarButtonItem" width="500" id="aSa-x9-hDd">
-                            <segmentedControl key="customView" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="bAB-eK-6nf">
+                            <segmentedControl key="customView" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="bAB-eK-6nf" customClass="FUISegmentedControl">
                                 <rect key="frame" x="7" y="7" width="500" height="31"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <segments>
@@ -186,7 +187,6 @@
                                     <segment title="Upcoming"/>
                                     <segment title="Fresh"/>
                                 </segments>
-                                <color key="tintColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="calibratedRGB"/>
                                 <connections>
                                     <action selector="featureChanged:" destination="MuX-O4-3bt" eventType="valueChanged" id="bT0-Zi-apb"/>
                                 </connections>
@@ -222,6 +222,7 @@
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="rdo-7n-Jmd">
                         <rect key="frame" x="0.0" y="0.0" width="768" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <gestureRecognizers/>
                         <color key="tintColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
@@ -235,6 +236,9 @@
         </scene>
     </scenes>
     <classes>
+        <class className="FUISegmentedControl" superclassName="UISegmentedControl">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/FUISegmentedControl.h"/>
+        </class>
         <class className="NSLayoutConstraint" superclassName="NSObject">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/NSLayoutConstraint.h"/>
         </class>
@@ -268,9 +272,10 @@
         <class className="TCThumbnailsViewController" superclassName="UICollectionViewController">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/TCThumbnailsViewController.h"/>
             <relationships>
+                <relationship kind="action" name="dismissPopover:"/>
                 <relationship kind="action" name="featureChanged:"/>
                 <relationship kind="outlet" name="categoryBarButtonItem" candidateClass="UIBarButtonItem"/>
-                <relationship kind="outlet" name="featureSegmentedControl" candidateClass="UISegmentedControl"/>
+                <relationship kind="outlet" name="featureSegmentedControl" candidateClass="FUISegmentedControl"/>
             </relationships>
         </class>
         <class className="UICollectionReusableView" superclassName="UIView">
@@ -284,6 +289,9 @@
         </class>
         <class className="UICollectionViewFlowLayout" superclassName="UICollectionViewLayout">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/UICollectionViewFlowLayout.h"/>
+        </class>
+        <class className="UICollectionViewLayout" superclassName="NSObject">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/UICollectionViewLayout.h"/>
         </class>
     </classes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">

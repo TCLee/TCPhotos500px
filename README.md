@@ -5,7 +5,7 @@
 
 This sample project demonstrates using 500px's API to view and filter public photo streams.
 It displays the thumbnails from the photo stream in a standard UICollectionView. When a thumbnail is 
-selected, the larger version of the photo will be displayed in an overlay modal view.
+selected, it will zoom in to display the photo in an overlay modal view. Dismissing the photo will zoom it back out to the thumbnail.
 
 ###Features
 * Asynchronously fetches a page of photos only when needed.

@@ -13,6 +13,7 @@ selected, it will zoom in to display the photo in an overlay modal view. Dismiss
 * Tap-to-dismiss gesture for overlay modal view.
 * Custom zoom in and out transition animation for presenting and dismissing the overlay modal view.
 * "Pull-to-Refresh" to get the latest photos from 500px's photo stream.
+* Minimalist UI built using FlatUIKit.
 * Supports all device orientations.
 * Uses iOS 6's Auto Layout features to make it easier to transition to iOS 7.
 * Full source code provided and project files are organised clearly in a MVC structure.
@@ -34,6 +35,7 @@ selected, it will zoom in to display the photo in an overlay modal view. Dismiss
 * SDWebImage - [https://github.com/rs/SDWebImage](https://github.com/rs/SDWebImage)
 * MBProgressHUD - [https://github.com/jdg/MBProgressHUD](https://github.com/jdg/MBProgressHUD)
 * SVPullToRefresh - [https://github.com/samvermette/SVPullToRefresh](https://github.com/samvermette/SVPullToRefresh)
+* FlatUIKit - [https://github.com/Grouper/FlatUIKit](https://github.com/Grouper/FlatUIKit)
 
 ###See Also
 * 500px for Developers - [http://developers.500px.com/](http://developers.500px.com/)

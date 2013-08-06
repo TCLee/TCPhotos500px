@@ -1,5 +1,6 @@
 PODS:
   - 500px-iOS-api (1.0.3)
+  - FlatUIKit (HEAD based on 1.2)
   - libwebp (0.3.0-rc7):
     - libwebp/dec
     - libwebp/dsp
@@ -19,12 +20,14 @@ PODS:
 
 DEPENDENCIES:
   - 500px-iOS-api (~> 1.0.3)
+  - FlatUIKit (HEAD)
   - MBProgressHUD (~> 0.7)
   - SDWebImage (~> 3.3)
   - SVPullToRefresh (~> 0.4.1)
 
 SPEC CHECKSUMS:
   500px-iOS-api: 720d14d188a03e92006ad1af5e65f9da6330b2a1
+  FlatUIKit: 43b2acaa6f4ef57539b51b00e4ce62d506e33e11
   libwebp: 40517fa1fd3716eded73b4696c45fc0b66e4b414
   MBProgressHUD: 1fd8591a2216d5dec6de24e09187bb03bcbe9946
   SDWebImage: 79a8bac9ccf85b269100b294f7b43684dab8bf8a

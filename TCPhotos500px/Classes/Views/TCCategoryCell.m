@@ -9,7 +9,21 @@
 #import "TCCategoryCell.h"
 #import "TCPhotoStreamCategory.h"
 
+// FlatUIKit
+#import "UIColor+FlatUI.h"
+#import "UITableViewCell+FlatUI.h"
+#import "FUICellBackgroundView.h"
+
 @implementation TCCategoryCell
+
+// Customize the cell's appearance after it has been loaded from the storyboard.
+- (void)awakeFromNib
+{
+    [self configureFlatCellWithColor:[UIColor whiteColor] selectedColor:[UIColor peterRiverColor]];
+    
+    self.textLabel.textColor = [UIColor blackColor];
+    self.textLabel.highlightedTextColor = [UIColor whiteColor];
+}
 
 - (void)setCategory:(TCPhotoStreamCategory *)category
 {

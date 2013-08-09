@@ -11,6 +11,9 @@
 #import "TCPhotoStreamCategory.h"
 #import "TCCategoryCell.h"
 
+// FlatUIKit
+#import "UIColor+FlatUI.h"
+
 @interface TCCategoryListViewController ()
 
 @end
@@ -19,7 +22,14 @@
 
 @implementation TCCategoryListViewController
 
-#pragma mark - View Life Cycle
+#pragma mark - View Events
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    
+    self.tableView.backgroundColor = [UIColor cloudsColor];
+}
 
 - (void)viewWillAppear:(BOOL)animated
 {

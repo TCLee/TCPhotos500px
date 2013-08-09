@@ -19,7 +19,7 @@
 // Customize the cell's appearance after it has been loaded from the storyboard.
 - (void)awakeFromNib
 {
-    [self configureFlatCellWithColor:[UIColor whiteColor] selectedColor:[UIColor peterRiverColor]];
+    [self configureFlatCellWithColor:[UIColor cloudsColor] selectedColor:[UIColor peterRiverColor]];
     
     self.textLabel.textColor = [UIColor blackColor];
     self.textLabel.highlightedTextColor = [UIColor whiteColor];

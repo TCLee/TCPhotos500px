@@ -153,7 +153,7 @@ static NSString * const kSegueIdentifierCategoryPopover = @"showCategoryList";
 
 - (void)configurePopover
 {
-    [self.categoryListPopoverController configureFlatPopoverWithBackgroundColor:[UIColor whiteColor]
+    [self.categoryListPopoverController configureFlatPopoverWithBackgroundColor:[UIColor silverColor]
                                                                    cornerRadius:6.0f];
 }
 

@@ -241,8 +241,11 @@ static NSString * const kSegueIdentifierCategoryPopover = @"showCategoryList";
 
 - (NSInteger)collectionView:(UICollectionView*)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    // If there are no photos yet, we should initially show the default number of placeholders.
-    return MAX([self.photoStream photoCount], kPXAPIHelperDefaultResultsPerPage);
+    // While photos are still loading, we show a default number of placeholders
+    // initially. After photos have finished loading, we will replace these
+    // placeholders with actual number of photos.    
+    NSInteger photoCount = [self.photoStream photoCount];
+    return TCPhotoStreamNoPhotoCount == photoCount ? kPXAPIHelperDefaultResultsPerPage : photoCount;
 }
 
 // Return the photo cell view.

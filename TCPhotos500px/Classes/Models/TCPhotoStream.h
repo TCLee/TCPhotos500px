@@ -12,6 +12,11 @@
 typedef void(^TCPhotoCompletionBlock)(TCPhoto *photo, NSError *error);
 
 /*
+ Photo count value that indicates that the photo stream has not been fetched in yet.
+ */
+enum { TCPhotoStreamNoPhotoCount = -1 };
+
+/*
  This model represents a photo stream.  
  A photo stream will be separated into pages for more efficient retrieval.
  */
@@ -35,8 +40,10 @@ typedef void(^TCPhotoCompletionBlock)(TCPhoto *photo, NSError *error);
 
 /*
  Returns the total number of photos in this photo stream.
+ 
+ If photo stream has not finished loading yet, it returns TCPhotoStreamNoPhotoCount.
  */
-- (NSUInteger)photoCount;
+- (NSInteger)photoCount;
 
 /*
  If photo is in the cache, this method will return the photo from the cache. 

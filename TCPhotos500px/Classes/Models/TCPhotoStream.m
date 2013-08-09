@@ -14,7 +14,7 @@ typedef void(^TCPhotoStreamPageCompletionBlock)(TCPhotoStreamPage *page, NSError
 @interface TCPhotoStream ()
 
 // Keeps track of the total number of photos in this photo stream.
-@property (nonatomic, assign) NSUInteger photoCount;
+@property (nonatomic, assign) NSInteger photoCount;
 
 // We're using a pointer array because our array will be quite sparse.
 // E.g. We may have 2000 pages, but user is only viewing the first 2 pages.
@@ -32,11 +32,12 @@ typedef void(^TCPhotoStreamPageCompletionBlock)(TCPhotoStreamPage *page, NSError
     if (self) {
         _feature = feature;
         _category = category;
+        _photoCount = TCPhotoStreamNoPhotoCount;
     }    
     return self;
 }
 
-- (NSUInteger)photoCount
+- (NSInteger)photoCount
 {
     return _photoCount;
 }
@@ -106,12 +107,12 @@ typedef void(^TCPhotoStreamPageCompletionBlock)(TCPhotoStreamPage *page, NSError
     
     // By default, we exclude Nude photos to make this app child-friendly.
     [PXRequest requestForPhotoFeature:self.feature resultsPerPage:kPXAPIHelperDefaultResultsPerPage page:page.pageNumber photoSizes:(PXPhotoModelSizeThumbnail|PXPhotoModelSizeLarge) sortOrder:kPXAPIHelperDefaultSortOrder except:PXPhotoModelCategoryNude only:self.category completion:^(NSDictionary *results, NSError *error) {
-        if (results) {                    
+        if (results) {
             [blockPage setAttributes:results];
             
             // Update the total number of pages and photos in this photo stream.
-            self.photoCount = [results[@"total_items"] unsignedIntegerValue];
-            [self.pages setCount:[results[@"total_pages"] unsignedIntegerValue]];
+            self.photoCount = [results[@"total_items"] integerValue];
+            [self.pages setCount:[results[@"total_pages"] unsignedIntegerValue]];            
         } else if (error) {
             // nil out the page on error, so that we can retry loading it again.
             blockPage = nil;

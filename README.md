@@ -5,9 +5,9 @@ TCPhotos500px is a sample iPad app that uses 500px's API to explore its beautifu
 It displays the thumbnails from the photo stream in a standard `UICollectionView`. When a thumbnail is selected, it will zoom in to display the photo in an overlay modal view. Dismissing the photo will zoom it back out to the thumbnail.
 
 <br>
-![Thumbnails Screenshot](README-Images/Screenshot1.png "Thumbnails Collection View")
+![Thumbnails Screenshot](http://tclee.github.io/TCPhotos500px/images/Screenshot1.png "Thumbnails Collection View")
 
-![Photo Modal Overlay Screenshot](README-Images/Screenshot2.png "Photo Modal Overlay View")
+![Photo Modal Overlay Screenshot](http://tclee.github.io/TCPhotos500px/images/Screenshot2.png "Photo Modal Overlay View")
 
 ###Features
 * Asynchronously fetches a page of photos only when needed.
